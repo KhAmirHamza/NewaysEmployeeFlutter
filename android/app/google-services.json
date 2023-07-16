@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "179420861985",
+    "project_id": "neways3-pro",
+    "storage_bucket": "neways3-pro.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:179420861985:android:d121db59bf7ed81c7c3560",
+        "android_client_info": {
+          "package_name": "com.neways3.hrm"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "179420861985-em7qk8accb988lomhjen1a6vpdanvlmf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBiSbJLnU1yGkwFhKEsOD84XDn2wS0MTz0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "179420861985-em7qk8accb988lomhjen1a6vpdanvlmf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
