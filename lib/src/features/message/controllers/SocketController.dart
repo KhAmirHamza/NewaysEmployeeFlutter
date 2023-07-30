@@ -133,20 +133,24 @@ class SocketController {
     selectedEmployee != null ? employees.add(selectedEmployee) : {};
     print("photo url: " + photo);
 
+
+    var data = jsonEncode(<String, dynamic>{
+      "title": convsTitle,
+      "photo": photo,
+      "type": convsType,
+      "participants": convsType == "Single" ? employees : groupEmployees,
+      "message": message,
+      "owner": owner,
+      "admins": admins,
+      "lockedMsgs": [],
+    });
+
+
     var response = await dio.post(
       //'https://nodejsrealtimechat.onrender.com/conversation/firstMessage',
       chatUrl + "/conversation/firstMessage",
       // 'http://172.28.240.1:3000/conversation/add',
-      data: jsonEncode(<String, dynamic>{
-        "title": convsTitle,
-        "photo": photo,
-        "type": convsType,
-        "participants": convsType == "Single" ? employees : groupEmployees,
-        "message": message,
-        "owner": owner,
-        "admins": admins,
-        "lockedMsgs": [],
-      }),
+      data: data,
       options: Options(headers: header),
     );
     Conversation conversation = Conversation.fromJson(response.data);

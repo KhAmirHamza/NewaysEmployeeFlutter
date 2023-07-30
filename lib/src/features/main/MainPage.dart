@@ -1,5 +1,7 @@
 // ignore_for_file: file_names
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -48,13 +50,24 @@ class _MainPageState extends State<MainPage> {
       print("notifyLeave called: ");
       if(data==null) return;
       var jsonMap = data as Map<String, dynamic>;
-      //OnlineEmployee newOnlineEmployee = OnlineEmployee.fromJson(jsonMap);
-      print("Leave an employee: ${jsonMap['employee_id']}");
-      print(onlineEmployees.length);
-      onlineEmployees.removeWhere(
-          (element) => element.employeeId == jsonMap['employee_id']);
-      print(onlineEmployees.length);
+      jsonMap['status'] = "0";
+      OnlineEmployee newOnlineEmployee = OnlineEmployee.fromJson(jsonMap);
+      int onlineEmployeeIndex = onlineEmployees.indexWhere((element) => element.employeeId==newOnlineEmployee.employeeId);
+      print("Json Data: $jsonMap");
+      print("Online Employee: ${newOnlineEmployee.toJson()}");
+      print("Online Employee Index: $onlineEmployeeIndex");
+      print("Leave an employee: employeeId: ${newOnlineEmployee.employeeId!}, socketId: ${newOnlineEmployee.socketId}, status:  ${newOnlineEmployee.status}, index:  $onlineEmployeeIndex");
 
+      if(onlineEmployeeIndex > -1) {
+        onlineEmployees.removeAt(onlineEmployeeIndex);
+      }
+      onlineEmployees.add(newOnlineEmployee);
+      //convsController.conversations.refresh();
+      // print("All Online Employees: ");
+      // for(int i=0; i<onlineEmployees.length; i++){
+      //   print(jsonEncode(onlineEmployees[i]));
+      // }
+      print(onlineEmployees.length);
       setState(() {});
     });
   }
@@ -80,8 +93,7 @@ class _MainPageState extends State<MainPage> {
               status: 0);
           convsController.setCurrentEmployee(currentEmployee!);
           convsController.getConversationByUserId();
-          socket!.emit("Join",
-              {"employee_id": value.employeeId, 'socket_id': socket!.id});
+          socket!.emit("Join", {"employee_id": value.employeeId, 'socket_id': socket!.id, 'status': "1", 'lastCheckIn': "12345"});
           setUpJoinAndLeaveListener(
               convsController.currentEmployee!.employeeId!);
           PhoneContactController().loadContacts(value!.employeeId, "employee");

@@ -1,5 +1,7 @@
 // ignore_for_file: file_names, avoid_print
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -99,11 +101,15 @@ void setUpJoinAndLeaveListener(String currentEmployeeId) {
     var jsonMap = data as Map<String, dynamic>;
     //print(data);
     print("Join an employee: ${jsonMap['employee_id']}");
+    jsonMap['status'] = "1";
     OnlineEmployee newOnlineEmployee = OnlineEmployee.fromJson(jsonMap);
-    onlineEmployees.contains(newOnlineEmployee)
-        ? {}
-        : onlineEmployees.add(newOnlineEmployee);
-    //_ChatScreenState().refresh();
+    print(newOnlineEmployee.toJson());
+    int onlineEmployeeIndex = onlineEmployees.indexWhere((element) => element.employeeId==newOnlineEmployee.employeeId);
+    if(onlineEmployeeIndex > -1) {
+      onlineEmployees.removeAt(onlineEmployeeIndex);
+    }
+    onlineEmployees.add(newOnlineEmployee);
+
     convsController.conversations.refresh();
   });
 }
@@ -135,6 +141,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     myFocusNode.dispose();
+    print("App Totally Closed!");
     super.dispose();
   }
 
@@ -364,6 +371,8 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                   return ListView.builder(
                     itemCount: conversationController.conversations.length,
                     itemBuilder: (context, index) {
+                      print("Test1: Conversation Id: ${conversationController.conversations[index].id!} Conversation Type: ${conversationController.conversations[index].type!}");
+
                       return conversationController.conversations.length > 0 &&
                               convsController
                                       .conversations[index].messages!.length >
@@ -408,23 +417,57 @@ class _ConversationItemWidgetState extends State<ConversationItemWidget> {
     var otherUserActiveStatus = "Offline";
     print("Online Employee: ${onlineEmployees.length}");
 
+
+
     EmployeeResponseModel? selectedEmployee;
 
     if (widget.conversation.type == "Single" && onlineEmployees.length > 1) {
       if (widget.conversation.participants![0].employeeId ==
           widget.currentEmployee.employeeId) {
+        print("Op:1");
         var otherEmployee = widget.conversation.participants![1];
-        otherUserActiveStatus = onlineEmployees.any(
-                (element) => element.employeeId == otherEmployee.employeeId)
-            ? "Online"
-            : "Offline";
-      } else {
+        print("Test2: Conversation Id: "+widget.conversation.id!+" Conversation Type: "+widget.conversation.type!);
+        print("Current Employee Id: "+widget.currentEmployee.employeeId!);
+        print("Other Employee Id: "+otherEmployee.employeeId!);
 
+        var onlineParticipantIndex = onlineEmployees.indexWhere((element) => element.employeeId==otherEmployee.employeeId);
+        print("onlineParticipantIndex: " +onlineParticipantIndex.toString());
+
+        if(onlineParticipantIndex>-1 && (onlineEmployees[onlineParticipantIndex].status==null || onlineEmployees[onlineParticipantIndex].status=="1")){
+          otherUserActiveStatus = "Online";
+        }
+
+        // otherUserActiveStatus = onlineEmployees.any(
+        //         (element) => (element.employeeId == otherEmployee.employeeId && (element.status == "1" || element.status == null))) //
+        //     ? "Online"
+        //     : "Offline";
+
+
+      } else {
+        print("Op:2");
         var otherEmployee = widget.conversation.participants![0];
-        otherUserActiveStatus = onlineEmployees.any(
-                (element) => element.employeeId == otherEmployee.employeeId)
-            ? "Online"
-            : "Offline";
+        print("Test2.1: Conversation Id: "+widget.conversation.id!+" Conversation Type: "+widget.conversation.type!);
+        print("Current Employee Id: "+widget.currentEmployee.employeeId!);
+
+        print("All Online Employees: ");
+        for(int i=0; i<onlineEmployees.length; i++){
+          print(jsonEncode(onlineEmployees[i]));
+        }
+
+        var onlineParticipantIndex = onlineEmployees.indexWhere((element) => element.employeeId==otherEmployee.employeeId);
+        print("onlineParticipantIndex: " +onlineParticipantIndex.toString());
+
+
+        if(onlineParticipantIndex>-1 && (onlineEmployees[onlineParticipantIndex].status==null || onlineEmployees[onlineParticipantIndex].status=="1")){
+          otherUserActiveStatus = "Online";
+        }
+
+
+
+        // otherUserActiveStatus = onlineEmployees.any(
+        //         (element) => element.employeeId == otherEmployee.employeeId && (element.status == "1" || element.status == null))
+        //     ? "Online"
+        //     : "Offline";
       }
       selectedEmployee =
       widget.conversation.participants![0].employeeId ==
@@ -455,7 +498,7 @@ class _ConversationItemWidgetState extends State<ConversationItemWidget> {
 
 
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 10),
+      margin: const EdgeInsets.symmetric(horizontal: 10),
       child: Card(
         elevation: 2,
         child: InkWell(

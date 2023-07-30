@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:drop_down_list/model/selected_list_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -33,6 +35,7 @@ class TaskController extends GetxController {
   TextEditingController benefitController = TextEditingController();
   TextEditingController pointController = TextEditingController();
   String taskType = "regular";
+  bool isCheckBoxChecked = false;
 
   bool isCommets = false;
   TextEditingController commentController = TextEditingController();
@@ -147,6 +150,35 @@ class TaskController extends GetxController {
           margin: EdgeInsets.all(DPadding.full));
       return false;
     }
+
+    else if (isCheckBoxChecked && pointController.text.isEmpty) {
+      Get.snackbar('Warning', "Performance bonus point must be required",
+          snackPosition: SnackPosition.BOTTOM,
+          margin: EdgeInsets.all(DPadding.full));
+      return false;
+    }
+
+    else if (isCheckBoxChecked && pointController.text.isNotEmpty && !(int.parse(pointController.text)>=5 && int.parse(pointController.text)<=100)) {
+      Get.snackbar('Warning', "Performance bonus points must be between 5 and 100%",
+          snackPosition: SnackPosition.BOTTOM,
+          margin: EdgeInsets.all(DPadding.full));
+      return false;
+    }
+    print({
+      "employee_id": employeeController.text.isNotEmpty
+          ? employeeController.text.split(' - ')[0]
+          : GetStorage().read('employeeId'),
+      "title": titleController.text,
+      "description": descriptionController.text,
+      "task_benefit": benefitController.text,
+      "deadline": deadline.toString(),
+      "task_type": taskType,
+      "point": pointController.text.isEmpty? "0": pointController.text,
+      "rate": rate,
+    });
+
+    return;
+
     EasyLoading.show();
     await TaskAPIServices.submit(
       data: {
@@ -158,7 +190,7 @@ class TaskController extends GetxController {
         "task_benefit": benefitController.text,
         "deadline": deadline.toString(),
         "task_type": taskType,
-        "point": pointController.text,
+        "point": pointController.text.isEmpty? "0": pointController.text,
         "rate": rate,
       },
     ).then((data) async {
@@ -322,4 +354,9 @@ class TaskController extends GetxController {
     pointController.clear();
     makeRating(1);
   }
+
+
+
+
+
 }

@@ -70,6 +70,9 @@ dependencies:
   chips_choice: ^3.0.0
   audioplayers: ^4.1.0
   flutter_ringtone_player: ^3.2.0
+  flutter_animated_dialog: ^2.0.1
+  html_unescape: ^2.0.0
+  html: ^0.15.4
 
 dev_dependencies:
   flutter_launcher_icons: #"^0.10.0"

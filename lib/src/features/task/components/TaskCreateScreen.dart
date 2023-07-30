@@ -2,6 +2,7 @@ import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:neways3/src/features/task/widgets/TaskCheckBox.dart';
 
 import '../../../utils/constants.dart';
 import '../../../utils/functions.dart';
@@ -9,10 +10,12 @@ import '../../../utils/textfiled.dart';
 import '../controllers/TaskController.dart';
 
 class TaskCreateScreen extends StatelessWidget {
-  const TaskCreateScreen({super.key});
 
+  TaskCreateScreen({super.key});
+  
   @override
   Widget build(BuildContext context) {
+
     return GetBuilder<TaskController>(
         init: TaskController(),
         builder: (controller) {
@@ -186,69 +189,82 @@ class TaskCreateScreen extends StatelessWidget {
                                               color: Colors.grey.shade700),
                                         ),
                                         const HeightSpace(),
-                                        RadioListTile(
-                                          title: const Text("Regular"),
-                                          value: "regular",
-                                          groupValue: controller.taskType,
-                                          onChanged: (value) {
-                                            controller.taskType =
-                                                value.toString();
-                                            controller.update();
-                                          },
-                                        ),
-                                        RadioListTile(
-                                          title: const Text("Challenging"),
-                                          value: "challenging",
-                                          groupValue: controller.taskType,
-                                          onChanged: (value) {
-                                            controller.taskType =
-                                                value.toString();
-                                            controller.update();
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                  if (isDepHead)
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        const HeightSpace(),
-                                        Text(
-                                          "Task Point",
-                                          style: TextStyle(
-                                              color: Colors.grey.shade700),
-                                        ),
-                                        const HeightSpace(),
+
                                         Container(
                                           decoration: BoxDecoration(
-                                            color: Colors.grey.shade100,
-                                            borderRadius: BorderRadius.circular(
-                                                DPadding.half / 2),
+                                            shape: BoxShape.rectangle,
+                                            borderRadius: BorderRadius.circular(DPadding.half / 2),
+                                            color: Colors.grey.shade100
                                           ),
-                                          child: TextFormField(
-                                            controller:
-                                                controller.pointController,
-                                            keyboardType: TextInputType.number,
-                                            decoration: InputDecoration(
-                                              contentPadding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 8,
-                                                      vertical: 8),
-                                              border: const OutlineInputBorder(
-                                                  borderSide: BorderSide.none),
-                                              hintText:
-                                                  "Enter ${controller.taskType} Task Point",
-                                              hintStyle: TextStyle(
-                                                color: Colors.grey.shade600,
-                                                fontSize: 14,
+                                          child: Column( children: [
+                                            Row(
+                                              children: [
+                                                TaskCheckBox(controller),
+                                                const Text("Performance bonus point for this Task")
+                                              ],),
+
+                                            if (isDepHead && controller.isCheckBoxChecked)
+                                              Column(
+                                                crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                                children: [
+                                                  Container(
+                                                    margin: EdgeInsets.fromLTRB(15,0,15,10),
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.grey.shade50,
+                                                      border: Border.all(color: Colors.green, width: 1),
+                                                      borderRadius: BorderRadius.circular(
+                                                          DPadding.half / 2),
+                                                    ),
+                                                    child: TextFormField(
+                                                      controller:
+                                                      controller.pointController,
+                                                      keyboardType: TextInputType.number,
+                                                      decoration: InputDecoration(
+                                                        contentPadding:
+                                                        const EdgeInsets.symmetric(
+                                                            horizontal: 8,
+                                                            vertical: 8),
+                                                        border: const OutlineInputBorder(
+                                                            borderSide: BorderSide.none),
+                                                        hintText:
+                                                        "5 to 100%",
+                                                        hintStyle: TextStyle(
+                                                          color: Colors.grey.shade400,
+                                                          fontSize: 14,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
-                                            ),
-                                          ),
+                                          ],)
                                         ),
+
+                                        // RadioListTile(
+                                        //   title: const Text("Regular"),
+                                        //   value: "regular",
+                                        //   groupValue: controller.taskType,
+                                        //   onChanged: (value) {
+                                        //     controller.taskType =
+                                        //         value.toString();
+                                        //     controller.update();
+                                        //   },
+                                        // ),
+                                        // RadioListTile(
+                                        //   title: const Text("Challenging"),
+                                        //   value: "challenging",
+                                        //   groupValue: controller.taskType,
+                                        //   onChanged: (value) {
+                                        //     controller.taskType =
+                                        //         value.toString();
+                                        //     controller.update();
+                                        //   },
+                                        // ),
                                       ],
                                     ),
-                                  const HeightSpace(),
+
+                                  const HeightSpace(height: 15,),
                                   Row(
                                     children: [
                                       Expanded(

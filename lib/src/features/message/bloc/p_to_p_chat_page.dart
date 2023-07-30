@@ -1495,7 +1495,7 @@ sendMessage(
     EmployeeResponseModel currentEmployee,
     EmployeeResponseModel selectedEmployee,
     String messageText,
-    String imageUrl,
+    List<Attachment> attachments,
     IO.Socket socket,
     String convsId,
     Function()? refreshRepliedMessage,
@@ -1532,9 +1532,6 @@ sendMessage(
   recipients.removeWhere(
       (element) => element.employeeId == currentEmployee.employeeId);
 
-  List<Attachment> attachments = <Attachment>[];
-  if (imageUrl.length > 1)
-    attachments.add(Attachment(type: "photo", url: imageUrl));
 
   Message message = Message(
       id: "id should be generated",
@@ -1724,6 +1721,8 @@ class _ChatMessageTypingFieldState extends State<ChatMessageTypingField> {
                         ? Icon(Icons.send, color: Colors.white)
                         : Icon(Icons.keyboard_voice, color: Colors.white),
                     onTap: () {
+                      List<Attachment> attachments = <Attachment>[];
+
                       if (messageController.text.length > 0) {
                         //Send Text Message
                         sendMessage(
@@ -1731,7 +1730,7 @@ class _ChatMessageTypingFieldState extends State<ChatMessageTypingField> {
                             widget.currentEmployee,
                             widget.selectedEmployee,
                             messageController.text,
-                            "",
+                            attachments,
                             widget.socket,
                             widget.convsId,
                             widget.refreshRepliedMessage,
@@ -1823,7 +1822,7 @@ class _ChatMessageTypingFieldState extends State<ChatMessageTypingField> {
       IO.Socket socket,
       String convsId,
       Function() refreshRepliedMessage) async {
-    file = await ImagePicker()
+      file = await ImagePicker()
         .pickImage(source: ImageSource.gallery); //pick an image
     //upload file...
     List<int> imageBytes = await file.readAsBytes();
@@ -1832,17 +1831,29 @@ class _ChatMessageTypingFieldState extends State<ChatMessageTypingField> {
     String filename = file.path.split('/').last;
     print(filename);
 
+
+
+
     final dio = Dio();
     try {
       var response = await dio.post(
           "$chatUrl/upload",
           data: {"image": base64Image, "name": filename});
+
+
+      List<Attachment> attachments = <Attachment>[];
+      if (response.data['url'].length > 1) {
+        attachments.add(Attachment(name: filename, type: "photo", url: response.data['url']));
+      }
+
+
+      // ignore: use_build_context_synchronously
       await sendMessage(
           convsController,
           currentEmployee,
           selectedEmployee,
           messageController.text,
-          response.data['url'],
+          attachments,
           socket,
           convsId,
           refreshRepliedMessage,

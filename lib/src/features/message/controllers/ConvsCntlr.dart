@@ -301,6 +301,8 @@ class ConversationController extends GetxController implements SocketListeners {
     // TODO: implement onMessageSend
 
     print("onMessageSend called");
+
+
     var jsonMap = data as Map<String, dynamic>;
 
     if ((conversations.length == 0 ||

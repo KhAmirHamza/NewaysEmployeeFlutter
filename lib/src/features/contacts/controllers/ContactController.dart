@@ -16,6 +16,7 @@ class ContactController extends GetxController {
   DateTime date = DateTime.now();
   bool isEmployeeStatus = true;
   TextEditingController searchController = TextEditingController();
+
   final scrollController = ScrollController();
   int limit = 20;
   late bool isLoading = false;

@@ -1547,16 +1547,18 @@ class _ChatBubbleState extends State<ChatBubble> {
   }
 }
 
-sendMessage(
-    ConversationController convsController,
+sendMessage(ConversationController convsController,
     EmployeeResponseModel currentEmployee,
     EmployeeResponseModel selectedEmployee,
     String messageText,
-    String imageUrl,
+    List<Attachment> attachments,
     IO.Socket socket,
     String convsId,
     Function()? refreshRepliedMessage,
     BuildContext context) async {
+
+
+
 
   List<String> seenBy = <String>[];
   seenBy.add(currentEmployee.employeeId.toString());
@@ -1580,10 +1582,6 @@ sendMessage(
 
   List<EmployeeResponseModel> recipients = convsController.conversations.firstWhere((element) => element.id==convsId).participants!;
   recipients.removeWhere((element) => element.employeeId == currentEmployee.employeeId);
-
-  List<Attachment> attachments = <Attachment>[];
-  if (imageUrl.length > 1)
-    attachments.add(Attachment(type: "photo", url: imageUrl));
 
   Message message = Message(
       id: "",
@@ -1768,6 +1766,8 @@ class _ChatMessageTypingFieldState extends State<ChatMessageTypingField> {
                         : const Icon(Icons.keyboard_voice, color: Colors.white),
                   ),
                   onTap: () {
+
+                    List<Attachment> attachments = <Attachment>[];
                     if (messageController.text.length > 0) {
                       //Send Text Message
                       sendMessage(
@@ -1775,7 +1775,7 @@ class _ChatMessageTypingFieldState extends State<ChatMessageTypingField> {
                           widget.currentEmployee,
                           widget.selectedEmployee,
                           messageController.text,
-                          "",
+                          attachments,
                           widget.socket,
                           widget.convsId,
                           widget.refreshRepliedMessage,
@@ -1872,19 +1872,31 @@ class _ChatMessageTypingFieldState extends State<ChatMessageTypingField> {
     String filename = file.path.split('/').last;
     print(filename);
 
+
+
+
     final dio = Dio();
     try {
       var response = await dio.post(
 
         "$chatUrl/upload",
-         // "https://nodejsrealtimechat.onrender.com/upload",
           data: {"image": base64Image, "name": filename});
+
+      List<Attachment> attachments = <Attachment>[];
+      if (response.data['url'].length > 1) {
+        attachments.add(Attachment(name: filename, type: "photo", url: response.data['url']));
+      }
+      print("Checking AttachmentData");
+      print(jsonEncode(attachments));
+      return;
+
+      // ignore: use_build_context_synchronously
       await sendMessage(
           convsController,
           currentEmployee,
           selectedEmployee,
           messageController.text,
-          response.data['url'],
+          attachments,
           socket,
           convsId,
           refreshRepliedMessage,

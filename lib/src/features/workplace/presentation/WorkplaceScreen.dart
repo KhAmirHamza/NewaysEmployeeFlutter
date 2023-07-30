@@ -12,12 +12,14 @@ import 'package:neways3/src/features/message/ChatScreen.dart';
 import 'package:neways3/src/features/prebook/widgets/PrebookScreen.dart';
 import 'package:neways3/src/features/purchase_money/components/PurchaseMoneyApproveScreen.dart';
 import 'package:neways3/src/features/purchase_money/components/PurchaseMoneyScreen.dart';
+import 'package:neways3/src/features/requisition/components/view_availablle_requisition.dart';
 import 'package:neways3/src/features/workplace/controller/WorkplaceController.dart';
 import 'package:neways3/src/utils/constants.dart';
 
 import '../../advance_salary/components/AdvanceSalaryApproveScreen.dart';
 import '../../advance_salary/components/AdvanceSalaryScreen.dart';
 import '../../leave/components/LeaveBossApproveScreen.dart';
+import '../../requisition/controllers/RequisitionController.dart';
 import '../../resign/components/ResignAppliedScreen.dart';
 import '../../resign/components/ResignApproveScreen.dart';
 import '../../ta_da/components/TADAApprovalScreen.dart';
@@ -29,6 +31,7 @@ import '../../task/components/TaskScreen.dart';
 class WorkplaceScreen extends StatelessWidget {
   WorkplaceScreen({Key? key}) : super(key: key);
   final scrollController = ScrollController();
+  final requisitionController = Get.put(RequisitionController());
 
   @override
   Widget build(BuildContext context) {
@@ -373,13 +376,15 @@ class WorkplaceScreen extends StatelessWidget {
                                         Get.to(const FiredEmployeeScreen()),
                                     title: 'Fired',
                                   ),
-
                                   DashboardGrid(
-                                    color: Colors.red,
+                                    color: Colors.green,
                                     icon: Icons.work_off_outlined,
-                                    onPress: () =>
-                                        Get.to(const PrebookScreen()),
-                                    title: 'Prebook',
+                                    onPress: () {
+                                      requisitionController.getAllAvailableRequisition(1, 3);
+                                    Navigator.push(context,
+                                      MaterialPageRoute(builder: (context) => ViewAvailableRequisition(requisitionController, 1, 3))
+                                    );
+                                    }, title: 'Requisition Approval',
                                   ),
                                 ],
                               ),
@@ -449,7 +454,8 @@ class DashboardGrid extends StatelessWidget {
             ),
           ),
           const HeightSpace(),
-          Text(title, style: DTextStyle.textSubTitleStyle2),
+          Expanded(child: Text(title, style: DTextStyle.textSubTitleStyle2, textAlign: TextAlign.center, overflow: TextOverflow.fade, maxLines: 1,
+            softWrap: false,),)
         ],
       ),
     );

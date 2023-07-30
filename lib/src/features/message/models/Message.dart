@@ -144,16 +144,21 @@ class ReplyOf {
 }
 
 class Attachment {
+  final String? name;
   final String type;
   final String url;
 
   Attachment({
+    this.name,
     required this.type,
     required this.url,
   });
 
   factory Attachment.fromJson(Map<String, dynamic> json) {
+    
+    String imageUrl = json['url'];
     return Attachment(
+      name: json['name'] ?? imageUrl,
       type: json['type'],
       url: json['url'],
     );
@@ -161,6 +166,7 @@ class Attachment {
 
   Map<String, dynamic> toJson() {
     return {
+      'name': name??url,
       'type': type,
       'url': url,
     };
