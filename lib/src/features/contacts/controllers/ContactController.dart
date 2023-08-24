@@ -20,23 +20,47 @@ class ContactController extends GetxController {
   final scrollController = ScrollController();
   int limit = 20;
   late bool isLoading = false;
+
+  bool? executeInitialTask;
+  String? departmentName;
+
+  ContactController({this.executeInitialTask = false, this.departmentName}); //bool this.executeInitialTask, this.departmentName
+
   @override
   void onInit() async {
     super.onInit();
-    scrollController.addListener(() async {
-      if (scrollController.position.maxScrollExtent ==
-          scrollController.offset) {
-        limit = limit + 20;
-        isLoading = true;
-        await getAllEmployee(size: limit);
+
+    // scrollController.addListener(() async {
+    //   if (scrollController.position.maxScrollExtent ==
+    //       scrollController.offset) {
+    //     limit = limit + 20;
+    //     isLoading = true;
+    //
+    //     print("onInit called: departmentName: $departmentName, executeInitialTask: $executeInitialTask");
+    //     if(departmentName != null){
+    //       await getAllEmployee(size: limit, department_name: departmentName);
+    //     }else{
+    //       await getAllEmployee(size: limit);
+    //     }
+    //   }
+    // });
+
+    print("onInit called: departmentName: $departmentName, executeInitialTask: $executeInitialTask");
+    if(departmentName != null){
+      await getAllEmployee(size: limit, department_name: departmentName);
+    }else{
+      await getAllEmployee(size: limit);
+      if(executeInitialTask!){
+        await askPermissions();
       }
-    });
-    await askPermissions();
+    }
   }
 
-  getAllEmployee({size}) async {
+  getAllEmployee({size=20, department_name}) async {
+    print("Check loop: Step: 2");
+
     EasyLoading.show();
-    await ContactService.allUsers(size: size, status: isEmployeeStatus ? 1 : 0)
+    await ContactService.allUsers(size: size, status: isEmployeeStatus ? 1 : 0, department_name: department_name) //
         .then((value) {
       // value.forEach(((element) => print(element.toJson())));
       if (value.runtimeType == List<EmployeeResponseModel>) {
@@ -46,15 +70,36 @@ class ContactController extends GetxController {
         // error
       }
     });
-    update();
+    //update();
+    refresh();
     EasyLoading.dismiss();
-    return true;
   }
 
-  search(value) async {
+  Future<EmployeeResponseModel?> getEmployee({employeeId}) async {
+    EasyLoading.show();
+    EmployeeResponseModel? employeeResponseModel;
+    await ContactService.getEmployee(employeeId: employeeId)
+        .then((value) {
+      if (value.runtimeType == EmployeeResponseModel) {
+        isLoading = false;
+        EasyLoading.dismiss();
+        employeeResponseModel = value;
+      } else {
+        // error
+        EasyLoading.dismiss();
+        isLoading = false;
+        return null;
+      }
+    });
+    return employeeResponseModel;
+  }
+
+
+
+  search(value, {departmentName}) async {
     Future.delayed(const Duration(milliseconds: 500));
     if (value.toString().isEmpty) {
-      await ContactService.allUsers(size: 20, status: isEmployeeStatus ? 1 : 0)
+      await ContactService.allUsers(size: 20, status: isEmployeeStatus ? 1 : 0, department_name: departmentName)
           .then((value) {
         if (value.runtimeType == List<EmployeeResponseModel>) {
           employees = value;
@@ -65,7 +110,7 @@ class ContactController extends GetxController {
       });
     } else {
       await ContactService.allUsers(
-              size: limit, status: isEmployeeStatus ? 1 : 0, search: value)
+              size: limit, status: isEmployeeStatus ? 1 : 0, search: value, department_name: departmentName)
           .then((value) {
         if (value.runtimeType == List<EmployeeResponseModel>) {
           employees = value;

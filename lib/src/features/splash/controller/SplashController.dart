@@ -6,9 +6,11 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:hive/hive.dart';
 import 'package:neways3/src/features/login/components/LoginPreviousScreen.dart';
 import 'package:neways3/src/features/login/components/LoginScreen.dart';
 import 'package:neways3/src/features/main/MainPage.dart';
+import 'package:store_redirect/store_redirect.dart';
 
 import '../../../utils/constants.dart';
 import '../../../utils/functions.dart';
@@ -18,6 +20,7 @@ import '../../update_apps/UpdateAppsScreen.dart';
 import 'package:quick_actions/quick_actions.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:socket_io_client/socket_io_client.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 class SplashController extends GetxController {
   Socket socket;
@@ -29,7 +32,11 @@ class SplashController extends GetxController {
 
   int _time = 2;
 
-  void startTimer() {
+  Future<void> startTimer() async {
+    Box notificationBox = await openBox(name: "notifications");
+    int navigationIndex = notificationBox.get("route", defaultValue: "Workspace")=="Chat"?0:2;
+    print("navigationIndex: $navigationIndex");
+
     const oneSec = Duration(seconds: 1);
     _timer = Timer.periodic(
       oneSec,
@@ -38,7 +45,7 @@ class SplashController extends GetxController {
           timer.cancel();
           if (box.read('isLogin') == true) {
             Navigator.pushReplacement(context,
-                MaterialPageRoute(builder: (context) => MainPage(socket, 2)));
+                MaterialPageRoute(builder: (context) => MainPage(socket, navigationIndex)));
             // Get.off(const MainPage(), transition: Transition.rightToLeft);
           } else {
             Navigator.pushReplacement(context,
@@ -61,8 +68,9 @@ class SplashController extends GetxController {
     //   box.write('device_token', value);
     // });
     _quickAction();
-    startTimer();
-    //checkExpire();
+
+    checkExpire();
+
   }
 
   _quickAction() {
@@ -94,17 +102,41 @@ class SplashController extends GetxController {
 
   checkExpire() async {
     try {
-      await httpAuthGet(path: '/check_expire').then((response) {
+      await httpAuthGet(path: '/check_expire').then((response) async {
         var data = jsonDecode(response.body);
+        print("CheckExpire: ${response.body}");
+        PackageInfo packageInfo = await PackageInfo.fromPlatform();
+
+        String appName = packageInfo.appName;
+        String packageName = packageInfo.packageName;
+        String version = packageInfo.version;
+        String buildNumber = packageInfo.buildNumber;
+        //print("appName: $appName");
+        //print("packageName: $packageName");
+        //print("version: $version");
+        //print("buildNumber: $buildNumber");
+
+
+        String versionFromAPI =
+        data['version'];
+         //'1.0.6';
+
         DateTime expire = DateTime.parse(data['expire']);
         DateTime today = DateTime.now();
-        box.write("appVersion", data['version']);
+        box.write("appVersion",versionFromAPI);
+        //print("today: $today");
+       // print("expire.difference(today).inDays: ${expire.difference(today).inDays}");
         if (expire.difference(today).inDays < 0 &&
-            appVersion != data['version']) {
-          Get.offAll(const UpdateAppsScreen(title: 'ae'));
-        } else if (appVersion != data['version']) {
+            version != versionFromAPI) {
+          //print("Step:1");
+          StoreRedirect.redirect();
+          // Get.offAll(
+          //     UpdateAppsScreen(title: 'ae', version: version)
+          // );
+        } else if (version != versionFromAPI) {
+          //print("Step:2");
           defaultDialog(
-            title: "New version ${data['version']} update available!",
+            title: "New version $versionFromAPI update available!",
             okPress: () async {
               Get.back();
             },
@@ -117,7 +149,8 @@ class SplashController extends GetxController {
                     TextButton(
                         onPressed: () {
                           Get.back();
-                          Get.to(const UpdateAppsScreen(title: ''));
+                          StoreRedirect.redirect();
+                         // Get.to(UpdateAppsScreen(title: '', version: version,));
                         },
                         style: TextButton.styleFrom(
                             foregroundColor: Colors.green,
@@ -139,6 +172,8 @@ class SplashController extends GetxController {
               ],
             ),
           );
+        }else{
+          startTimer();
         }
       });
     } catch (e) {

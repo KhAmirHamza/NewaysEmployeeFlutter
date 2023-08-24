@@ -201,7 +201,7 @@ class LoginScreen extends StatelessWidget {
                               if (controller.sendOtp) {
                                 if (controller.verify()) {
                                   Get.snackbar(
-                                      'Message', "Account Login Successfull!",
+                                      'Message', "Account Login Successfully!",
                                       snackPosition: SnackPosition.BOTTOM,
                                       margin: EdgeInsets.all(DPadding.full));
                                   Navigator.pushReplacement(

@@ -9,6 +9,7 @@ import 'package:neways3/src/features/contacts/models/employee_response_model.dar
 import 'package:neways3/src/features/main/MainPage.dart';
 import 'package:neways3/src/features/message/ChatScreen.dart';
 import 'package:neways3/src/features/message/controllers/SocketController.dart';
+import 'package:neways3/src/utils/constants.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 import '../controllers/ConvsCntlr.dart';
@@ -27,30 +28,36 @@ class CreateGroupWidget extends StatefulWidget {
       {Key? key})
       : super(key: key);
 
+
   @override
   State<CreateGroupWidget> createState() => _CreateGroupWidgetState();
 }
 
 class _CreateGroupWidgetState extends State<CreateGroupWidget> {
-  // final searchController = Get.put(SearchController());
+
+
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    groupEmployees.clear();
+    groupEmployees.add(widget.currentEmployee);
   }
 
+
+
   refreshFullPage() {
-    print("refreshFullPage called");
     setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
+
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      //widget.contactController.getUsersDataExceptOne(widget.currentEmployee.fullName, widget.currentEmployee.email);
       widget.contactController.getAllEmployee(size: 20);
     });
+
     return WillPopScope(
       onWillPop: () async {
         groupEmployees.clear();
@@ -70,7 +77,7 @@ class _CreateGroupWidgetState extends State<CreateGroupWidget> {
                   onPressed: () =>
                       Navigator.of(context, rootNavigator: true).pop(),
                 ),
-                title: Text(
+                title: const Text(
                   "Create a Group Chat",
                   style: TextStyle(
                       color: Colors.black,
@@ -147,17 +154,17 @@ class _GroupWidgetState extends State<GroupWidget>
               onPressed: () {},
               child: Row(
                 children: [
-                  CircleAvatar(
+                  const CircleAvatar(
                     radius: 17.0,
+                    backgroundColor: Colors.blueAccent,
                     child: Icon(
                       Icons.person,
                       color: Colors.white,
                     ),
-                    backgroundColor: Colors.blueAccent,
                   ),
                   Container(
                     margin: EdgeInsets.only(left: 15),
-                    child: Text(
+                    child: const Text(
                       "Friends",
                       style: TextStyle(fontSize: 17, color: Colors.black),
                     ),
@@ -172,16 +179,16 @@ class _GroupWidgetState extends State<GroupWidget>
                 children: [
                   CircleAvatar(
                     radius: 17.0,
-                    child: Icon(
+                    backgroundColor: Colors.cyan[700],
+                    child: const Icon(
                       Icons.contact_phone_sharp,
                       color: Colors.white,
                       size: 18,
                     ),
-                    backgroundColor: Colors.cyan[700],
                   ),
                   Container(
-                    margin: EdgeInsets.only(left: 15),
-                    child: Text(
+                    margin: const EdgeInsets.only(left: 15),
+                    child: const Text(
                       "Contacts",
                       style: TextStyle(fontSize: 17, color: Colors.black),
                     ),
@@ -194,17 +201,17 @@ class _GroupWidgetState extends State<GroupWidget>
               onPressed: () {},
               child: Row(
                 children: [
-                  CircleAvatar(
+                  const CircleAvatar(
                     radius: 17.0,
+                    backgroundColor: Colors.green,
                     child: Icon(
                       Icons.group_rounded,
                       color: Colors.white,
                     ),
-                    backgroundColor: Colors.green,
                   ),
                   Container(
                     margin: EdgeInsets.only(left: 15),
-                    child: Text(
+                    child: const Text(
                       "Select aGroup",
                       style: TextStyle(fontSize: 17, color: Colors.black),
                     ),
@@ -213,8 +220,8 @@ class _GroupWidgetState extends State<GroupWidget>
               )),
           Container(
             alignment: Alignment.topLeft,
-            margin: EdgeInsets.fromLTRB(5, 10, 0, 5),
-            child: Text(
+            margin: const EdgeInsets.fromLTRB(5, 10, 0, 5),
+            child: const Text(
               "Select Contact",
               style: TextStyle(fontSize: 14, color: Colors.grey),
             ),
@@ -259,9 +266,8 @@ class _GroupWidgetState extends State<GroupWidget>
                               alignment: Alignment.topLeft,
                               margin: EdgeInsets.fromLTRB(5, 5, 5, 0),
                               child: Text(
-                                "Selected Contact: ( ${groupEmployees.length} )",
-                                style:
-                                    TextStyle(fontSize: 14, color: Colors.grey),
+                                "Selected Employees: ( ${groupEmployees.length} )",
+                                style: const TextStyle(fontSize: 14, color: Colors.grey),
                               ),
                             ),
                           ),
@@ -282,7 +288,7 @@ class _GroupWidgetState extends State<GroupWidget>
                                         duration: Duration(
                                             milliseconds: animDuraton));
 
-                                return SelectedUserWidget(_controller, index);
+                                return SelectedEmployeeWidget(_controller, index);
                               },
                             ),
                           ),
@@ -323,10 +329,10 @@ class _GroupWidgetState extends State<GroupWidget>
   }
 }
 
-class SelectedUserWidget extends StatelessWidget {
+class SelectedEmployeeWidget extends StatelessWidget {
   AnimationController animationController;
   int index;
-  SelectedUserWidget(this.animationController, this.index, {Key? key})
+  SelectedEmployeeWidget(this.animationController, this.index, {Key? key})
       : super(key: key);
 
   @override
@@ -346,24 +352,25 @@ class SelectedUserWidget extends StatelessWidget {
     return FadeTransition(
         opacity: animationController,
         child: Container(
-          margin: EdgeInsets.fromLTRB(5, 10, 10, 0),
+          margin: const EdgeInsets.fromLTRB(5, 10, 10, 0),
+          width: 60,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const Expanded(
+              Expanded(
                 flex: 2,
                 child: CircleAvatar(
                   radius: 20,
-                  backgroundImage: NetworkImage(
-                      "https://cdn-icons-png.flaticon.com/512/2815/2815428.png"),
+                  backgroundImage: NetworkImage(groupEmployees[index]!.photo!),
                   backgroundColor: Colors.transparent,
                 ),
               ),
               Expanded(
                 child: Text(
                   groupEmployees[index].fullName.toString(),
-                  style: TextStyle(fontSize: 12),
+
+                  style: const TextStyle(fontSize: 12, overflow: TextOverflow.ellipsis),
                 ),
               )
             ],
@@ -406,7 +413,7 @@ class _EmployeeItemState extends State<EmployeeItem> {
               if (groupEmployees.length == 0) {
                 groupEmployees
                     .add(widget.contactController.employees[widget.index]);
-                print("Now Added");
+                //print("Now Added");
                 widget.contactController.refresh();
                 // widget.refreshFullPage();
               } else {
@@ -417,7 +424,7 @@ class _EmployeeItemState extends State<EmployeeItem> {
                           .employeeId) {
                     found = true;
                     groupEmployees.removeAt(i);
-                    print("Now Removed");
+                   // print("Now Removed");
                     widget.contactController.refresh();
                     // widget.refreshFullPage();
                     return;
@@ -426,8 +433,7 @@ class _EmployeeItemState extends State<EmployeeItem> {
                 if (!found) {
                   groupEmployees
                       .add(widget.contactController.employees[widget.index]);
-
-                  print("Now Added");
+                  //print("Now Added");
                   widget.contactController.refresh();
                   //widget.refreshFullPage();
                 }
@@ -495,7 +501,7 @@ void showCustomDialog(
     ContactController contactController,
     EmployeeResponseModel currentEmployee,
     IO.Socket socket) {
-  print("Next Clicked: " + groupEmployees.length.toString());
+  //print("Next Clicked: " + groupEmployees.length.toString());
 
   TextEditingController groupNameController = TextEditingController();
 
@@ -522,7 +528,7 @@ void showCustomDialog(
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(25.0),
-                    boxShadow: [
+                    boxShadow: const [
                       BoxShadow(
                           offset: Offset(0, 3),
                           blurRadius: 7,
@@ -550,8 +556,8 @@ void showCustomDialog(
               Container(
                 alignment: Alignment.topLeft,
                 margin: EdgeInsets.fromLTRB(5, 35, 5, 5),
-                child: Text(
-                  "Selected Contact",
+                child: const Text(
+                  "Selected Employees",
                   style: TextStyle(fontSize: 14, color: Colors.grey),
                 ),
               ),
@@ -564,22 +570,24 @@ void showCustomDialog(
                         // return EmployeeItem(selecteUsers, index);
                         return Card(
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(0),
+                            borderRadius: BorderRadius.circular(10),
                           ),
                           child: Container(
-                            margin: EdgeInsets.all(10),
+                            width: 60,
+                            margin: EdgeInsets.fromLTRB(5, 5, 5, 5),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                const CircleAvatar(
-                                  radius: 15,
-                                  backgroundImage: NetworkImage(
-                                      "https://cdn-icons-png.flaticon.com/512/2815/2815428.png"),
+                                CircleAvatar(
+                                  radius: 20,
+                                  backgroundImage: NetworkImage(groupEmployees[index].photo!),
                                   backgroundColor: Colors.transparent,
                                 ),
+                                HeightSpace(),
                                 Text(
                                   groupEmployees[index].fullName.toString(),
-                                  style: TextStyle(fontSize: 10),
+                                  style: TextStyle(fontSize: 10, overflow: TextOverflow.ellipsis),
+
                                 )
                               ],
                             ),
@@ -610,7 +618,7 @@ void showCustomDialog(
                           id: "id should be generate",
                           sender: currentEmployee,
                           recipients: groupEmployees,
-                          text: "Initial",
+                          texts: [],
                           seenBy: seenBy,
                           receivedBy: receivedBy,
                           attachments: [
@@ -622,7 +630,6 @@ void showCustomDialog(
                           reacts: reacts,
                           recall: 0,
                           replyOf: null);
-                      groupEmployees.add(currentEmployee);
 
                       String photo = "https://i.ibb.co/4sq8bwf/group.png";
                       List<EmployeeResponseModel> admins =

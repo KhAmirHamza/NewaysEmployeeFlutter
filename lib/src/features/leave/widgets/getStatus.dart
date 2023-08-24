@@ -4,26 +4,28 @@ import 'package:flutter/material.dart';
 import 'package:neways3/src/utils/constants.dart';
 
 getStatus({aproval, hAproval}) {
+  print("aproval: $aproval, hAproval: $hAproval");
   String status = "";
   Color color = Colors.black;
-  if (aproval == 0) {
-    if (hAproval == 1) {
-      status = "Processing";
+  if (int.parse("$aproval") == 0) {
+    if (int.parse(hAproval) == 1) {
+      status = "D-head Approved - Boss pending";
       color = Colors.blue;
-    } else if (hAproval == 2) {
-      status = "Rejected";
+    } else if (int.parse(hAproval) == 2) {
+      status = "D-head Rejected";
       color = Colors.redAccent;
     } else {
-      status = "Pending";
+      status = "D-head Pending";
       color = Colors.blueGrey;
     }
-  } else if (aproval == 1) {
-    status = "Approved";
+  } else if (int.parse("$aproval") == 1) {
+    status = "Boss Approved";
     color = Colors.green;
   } else {
-    status = "Rejected";
+    status = "Boss Rejected";
     color = Colors.red;
   }
+  print("status: $status");
   return Align(
     alignment: Alignment.centerRight,
     child: Container(
@@ -33,6 +35,7 @@ getStatus({aproval, hAproval}) {
         color: color.withOpacity(.2),
         borderRadius: BorderRadius.circular(DPadding.full),
       ),
+
       child: Text(
         status.toUpperCase(),
         style:

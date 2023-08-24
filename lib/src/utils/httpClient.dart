@@ -1,6 +1,7 @@
 // ignore_for_file: depend_on_referenced_packages, file_names
 
 import 'package:get_storage/get_storage.dart';
+import 'package:html/parser.dart';
 import 'package:http/http.dart' as http;
 
 // flutter build apk --split-per-abi
@@ -46,6 +47,7 @@ Future<http.Response> httpAuthGet({required path}) async {
     "Content-Type": "application/json",
     "authorization": "Bearer ${box.read('token')}"
   };
+
   var url = Uri.http(baseUrl, '$unencodedPath$path');
   print(url);
   var response = await http.get(url, headers: headers);

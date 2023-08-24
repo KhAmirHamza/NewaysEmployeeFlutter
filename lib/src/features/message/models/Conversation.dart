@@ -57,7 +57,7 @@ class Conversation {
         admins!.add(EmployeeResponseModel.fromJson(v));
       });
     }
-    lockedMsgs = json['lockedMsgs'].cast<String>();
+    lockedMsgs = json['lockedMsgs']==null? []: json['lockedMsgs'].cast<String>();
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
     iV = json['__v'];

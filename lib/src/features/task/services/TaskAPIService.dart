@@ -12,6 +12,7 @@ class TaskAPIServices {
     try {
       var response = await httpAuthGet(path: '/task_departments');
       if (response.statusCode == 200) {
+        print("Task all department: ${jsonEncode(jsonDecode(response.body)['data'])}");
         return jsonDecode(response.body)['data'];
       }
     } on DioError catch (e) {

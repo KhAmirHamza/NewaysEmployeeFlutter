@@ -26,7 +26,7 @@ class EmployeeResponseModel {
     this.companyPhone,
     this.companyEmail,
     this.status,
-    //this.assign_group,
+    this.assign_group,
   });
 
   String? employeeId;
@@ -40,7 +40,7 @@ class EmployeeResponseModel {
   String? companyPhone;
   String? companyEmail;
   dynamic status;
-  //String? assign_group;
+  String? assign_group;
 
 
   factory EmployeeResponseModel.fromJson(Map<String, dynamic> json) =>
@@ -56,7 +56,7 @@ class EmployeeResponseModel {
         companyPhone: json["Company_phone"],
         companyEmail: json["company_email"],
         status: json["status"],
-        //assign_group: json["assign_group"],
+        assign_group: json["assign_group"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -71,6 +71,6 @@ class EmployeeResponseModel {
         "Company_phone": companyPhone,
         "company_email": companyEmail,
         "status": status.toString(),
-        //"assign_group": assign_group.toString(),
+        "assign_group": assign_group.toString(),
       };
 }

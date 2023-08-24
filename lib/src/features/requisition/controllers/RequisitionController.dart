@@ -34,14 +34,27 @@ class RequisitionController extends GetxController{
     await RequisitionService.getAllAvailableRequisition(branchId, departmentId, this);
     update();
 
-    print("requisition: "+requisitions.length.toString());
+    //print("requisition: "+requisitions.length.toString());
    // EasyLoading.dismiss();
    // return true;
   }
 
 
   updateRequisitionApprovalStatus(String requisition_id, String requisition_type) async {
-    await RequisitionService.updateRequisitionApprovalStatus(requisition_id, requisition_type);
+    await RequisitionService.updateRequisitionApprovalStatus(requisition_id, requisition_type, (data){
+     // print("Requisition Data Changed");
+
+      int rIndex = requisitions.indexWhere((element) => element.requisitionId == requisition_id);
+     // print("requisitions.length: ${requisitions.length}, requisition_id: $requisition_id, rIndex: $rIndex");
+      for(int i=0; i<requisitions.length; i++){
+        if(requisitions[i].requisitionId == requisition_id){
+          requisitions[rIndex].processStatus =  2;
+          requisitions[rIndex].dheadApproval = requisition_type=="accept"? 1:2;
+        }
+      }
+      refresh();
+      //update();
+    });
   }
 
 

@@ -15,7 +15,7 @@ import '../services/TaskAPIService.dart';
 class TaskController extends GetxController {
   final scrollController = ScrollController();
 
-  String departmentName = '';
+  String? departmentName = '';
   String selectStatus = 'Backlog';
 
   List<TaskResponse>? backLogs;
@@ -48,13 +48,18 @@ class TaskController extends GetxController {
   bool isFiveStar = false;
   List departments = [];
 
+  TaskController({this.departmentName});
+
   @override
   onInit() {
     super.onInit();
+    print("getData: departmentName: $departmentName");
+
     getDepartment();
   }
 
   getDepartment() async {
+
     EasyLoading.show();
     await TaskAPIServices.getAllDepartment().then((value) {
       departments = value;
@@ -64,6 +69,7 @@ class TaskController extends GetxController {
   }
 
   getData() async {
+
     EasyLoading.show();
     displayData = [];
     backLogs = [];
@@ -177,7 +183,7 @@ class TaskController extends GetxController {
       "rate": rate,
     });
 
-    return;
+    //return;
 
     EasyLoading.show();
     await TaskAPIServices.submit(
@@ -217,7 +223,8 @@ class TaskController extends GetxController {
       Get.back();
       Get.snackbar('Message', data,
           snackPosition: SnackPosition.BOTTOM,
-          margin: EdgeInsets.all(DPadding.full));
+          margin: EdgeInsets.all(DPadding.full)
+      );
       await getData();
     });
     EasyLoading.dismiss();

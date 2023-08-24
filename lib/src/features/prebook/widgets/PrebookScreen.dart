@@ -517,7 +517,6 @@ Future getImage(ImageSource img, PrebookController controller) async {
       } else {
         print("Nothing is selected");
       }
-
 }
 
 

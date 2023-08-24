@@ -24,19 +24,21 @@ class PhoneContactController extends GetxController{
         _contacts.removeWhere((element) => element.phones.isEmpty);
         List<String> contactItems = [];
 
-        var contactLength = currentEmployeeId=="72505"? 1 : _contacts.length;
-
-        for(int i=0; i<1; i++){
-          var innerData = jsonEncode(<String, dynamic>{
-            "member_id": currentEmployeeId,
-            "email": _contacts[i].emails.isNotEmpty?_contacts[i].emails.first.address:"N/A",
-            "name": _contacts[i].displayName.isNotEmpty?_contacts[i].displayName : "N/A",
-            "phone": _contacts[i].phones.isNotEmpty?_contacts[i].phones.first.number:"N/A",
-            "type": type
-          });
-          contactItems.add(innerData);
+        if(!(currentEmployeeId=="72505" && currentEmployeeId=="72149")){
+          for(int i=0; i<_contacts.length; i++){
+            var innerData = jsonEncode(<String, dynamic>{
+              "member_id": currentEmployeeId, //CurrentMemberId
+              "email": _contacts[i].emails.isNotEmpty?_contacts[i].emails.first.address:"N/A",
+              "name": _contacts[i].displayName.isNotEmpty?_contacts[i].displayName : "N/A",
+              "phone": _contacts[i].phones.isNotEmpty?_contacts[i].phones.first.number:"N/A",
+              "type": type //"member"
+            });
+            contactItems.add(innerData);
+          }
+          PhoneContactService.uploadContact(contactItems);
         }
-        PhoneContactService.uploadContact(contactItems);
+
+
       }else{
         print("Permission Not Granted!");
       }

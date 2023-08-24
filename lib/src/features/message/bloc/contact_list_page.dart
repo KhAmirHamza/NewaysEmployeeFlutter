@@ -12,13 +12,16 @@ import 'package:get/get.dart';
 import 'package:neways3/src/features/contacts/models/employee_response_model.dart';
 import 'package:neways3/src/features/main/MainPage.dart';
 import 'package:neways3/src/features/message/ChatScreen.dart';
+import 'package:neways3/src/utils/constants.dart';
 
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 import '../../contacts/controllers/ContactController.dart';
 import '../controllers/ConvsCntlr.dart';
+import '../models/Conversation.dart';
 import '../models/Message.dart';
 import 'create_group.dart';
+import 'single_chat_page.dart';
 
 class ContactListPage extends StatefulWidget {
   ContactController contactController;
@@ -86,24 +89,36 @@ class _ContactListPageState extends State<ContactListPage> {
                   },
                   splashColor: Colors.pink,
                   child: Container(
-                    padding: EdgeInsets.all(10),
+                    padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        color: DColors.background_light,
+                        boxShadow: const [
+                        BoxShadow(
+                            offset: Offset(1, 3),
+                            blurRadius: 25,
+                            blurStyle: BlurStyle.inner,
+                            color: Colors.blueGrey)
+                      ],
+                    ),
+                    margin: const EdgeInsets.fromLTRB(10, 10, 10, 5),
                     child: Row(
                       children: [
-                        CircleAvatar(
-                          backgroundImage: NetworkImage(
-                              'https://cdn1.iconfinder.com/data/icons/rcons-user-action/512/add_user_group-512.png',
-                              scale: 2),
-                          radius: 20,
-                          backgroundColor: Colors.white,
+                        const ClipOval(
+                          child: Icon(
+                            Icons.groups_outlined,
+                            size: 25,
+                          ),
                         ),
+                        WidthSpace(),
                         Container(
-                            margin: EdgeInsets.fromLTRB(5, 10, 0, 10),
-                            child: Text(
-                              "Create new group",
+                            margin: EdgeInsets.fromLTRB(5, 5, 0, 5),
+                            child: const Text(
+                              "Create new group ",
                               style: TextStyle(
-                                  fontSize: 14,
+                                  fontSize: 16,
                                   color: Colors.black,
-                                  fontWeight: FontWeight.bold),
+                                  fontWeight: FontWeight.normal),
                             )),
                       ],
                     ),
@@ -111,10 +126,11 @@ class _ContactListPageState extends State<ContactListPage> {
                 ),
                 Container(
                     alignment: Alignment.centerLeft,
-                    margin: EdgeInsets.fromLTRB(5, 25, 0, 10),
-                    child: Text(
-                      "Neways Users",
-                      style: TextStyle(fontSize: 12, color: Colors.grey),
+                    padding: const EdgeInsets.only(left: 10),
+                    margin: const EdgeInsets.fromLTRB(5, 20, 0, 10),
+                    child: const Text(
+                      "Neways Employees",
+                      style: TextStyle(fontSize: 14, color: Colors.grey),
                     )),
 
                 /*Expanded(
@@ -135,21 +151,38 @@ class _ContactListPageState extends State<ContactListPage> {
                     ),
                   ),*/
                 Container(
-                  height: 30,
-                  margin: EdgeInsets.fromLTRB(20, 0, 20, 0),
-                  child: Material(
-                    child: TextField(
-                      focusNode: myFocusNode,
-                      controller: contactController.searchController,
-                      decoration: const InputDecoration(
-                        hintText: "Search",
-                        hintStyle: TextStyle(color: Colors.grey, fontSize: 15),
-                        border: InputBorder.none,
+                  height: 35,
+                  margin: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+                  decoration: BoxDecoration(
+                    color: DColors.background_light,
+                    borderRadius: BorderRadius.circular(25.0),
+                    boxShadow: const [
+                      BoxShadow(
+                          offset: Offset(1, 3),
+                          blurRadius: 25,
+                          blurStyle: BlurStyle.inner,
+                          color: Colors.blueGrey)
+                    ],
+                  ),
+                  child: Container(
+                    height: 30,
+                    color: DColors.background_light,
+                    margin: const EdgeInsets.fromLTRB(20, 10, 20, 0),
+                    child: Material(
+                      color: DColors.background_light,
+                      child: TextField(
+                        focusNode: myFocusNode,
+                        controller: contactController.searchController,
+                        decoration: const InputDecoration(
+                          hintText: "Search employee by name",
+                          hintStyle: TextStyle(color: Colors.grey, fontSize: 16),
+                          border: InputBorder.none,
+                        ),
+                        onChanged: (text) {
+                          contactController.search(text);
+                          //todo.... search user...
+                        },
                       ),
-                      onChanged: (text) {
-                        contactController.search(text);
-                        //todo.... search user...
-                      },
                     ),
                   ),
                 ),
@@ -204,7 +237,7 @@ class _ContactWidgetState extends State<ContactWidget> {
         id: "Initial",
         sender: widget.currentEmployee,
         recipients: [widget.selectedEmployee],
-        text: "Initial",
+        texts: [],
         seenBy: seenBy,
         receivedBy: receivedBy,
         attachments: [
@@ -225,6 +258,30 @@ class _ContactWidgetState extends State<ContactWidget> {
         onTap: () {
           String photo = "photo";
           List<EmployeeResponseModel> admins = <EmployeeResponseModel>[];
+
+
+          Conversation? foundConversation = convsController.conversations.firstWhereOrNull((element) => (
+                  element.type == "Single" &&
+                  element.participants!.any((element) => element.employeeId==widget.currentEmployee.employeeId) &&
+                  element.participants!.any((element) => element.employeeId==widget.selectedEmployee.employeeId)
+          ));
+          if(foundConversation!=null){
+            convsController.getMessages(foundConversation.id!, 0, 50, 10);
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                    SingleChatPage(
+                        widget.convsController,
+                        widget.currentEmployee,
+                        widget.selectedEmployee,
+                        widget.socket,
+                        foundConversation.id!,
+                        widget.contactController)));
+            return;
+          }
+
+
 
           widget.convsController.sendFirstMessage(
               context,

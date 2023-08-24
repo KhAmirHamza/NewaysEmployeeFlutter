@@ -1,5 +1,7 @@
 // ignore_for_file: file_names
 
+import 'dart:convert';
+
 import 'package:client_information/client_information.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
@@ -61,7 +63,7 @@ class LoginController extends GetxController {
     var status = await LoginService.login(LoginRequestModel(
             employeeId: employeeId.text, password: password.text))
         .then((value) async {
-      print(value);
+      print(jsonEncode(value).toString());
       EasyLoading.dismiss();
       if (value.runtimeType == LoginResponseModel) {
         if (isRemember) {
@@ -83,6 +85,7 @@ class LoginController extends GetxController {
         box.write('name', value.fullName);
         box.write('designationName', value.designationName);
         box.write('departmentName', value.departmentName);
+        box.write('roleName', value.roleName);
         box.write('roleName', value.roleName);
         box.write('isDepHead', value.isDepHead);
         box.write('avater', value.avater);

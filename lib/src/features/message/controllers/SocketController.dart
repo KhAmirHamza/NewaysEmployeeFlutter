@@ -1,13 +1,16 @@
 import 'dart:convert';
-
 import 'package:dio/dio.dart';
-import 'package:get/get.dart';
+//import 'package:mentionable_text_field/mentionable_text_field.dart';
 import 'package:neways3/src/features/contacts/models/employee_response_model.dart';
+import 'package:neways3/src/utils/constants.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:socket_io_client/socket_io_client.dart';
 import '../ChatScreen.dart';
+import '../functions.dart';
 import '../models/Conversation.dart';
 import '../models/Message.dart';
+import '../models/MessageTextItem.dart';
+import '../models/OnlineEmployee.dart';
 import '../utils/Constant.dart';
 import 'ConvsCntlr.dart';
 
@@ -19,6 +22,7 @@ class SocketController {
   SocketController() {
     connectToSocket();
   }
+
 
   IO.Socket getInstance() {
     return connectToSocket()!;
@@ -32,7 +36,7 @@ class SocketController {
   notifyMessageReceived(
       String convsId, String convsType, String currentUserId) {
     //Notify Sender, Receiver has received the Message... Step: 3 //Receiver Page
-    print("notify other client that MessageReceived called");
+    //print("notify other client that MessageReceived called");
 
     var json = {
       "convsId": convsId,
@@ -44,7 +48,7 @@ class SocketController {
 
   notifyMessageSeen(String convsId, String convsType, String currentUserId) {
     //Notify Sender, Receiver has seen the Message... Step: 5 //Receiver Page
-    print("notify other client that MessageSeen called");
+    //print("notify other client that MessageSeen called");
 
     var json = {
       "convsId": convsId,
@@ -64,8 +68,7 @@ class SocketController {
       "reactTitle": reactTitle,
       "sender": currentemployee
     };
-    print("notify other client that NewReactAdded called: json: " +
-        json.toString());
+    //print("notify other client that NewReactAdded called: json: " +json.toString());
     socket!.emit('notifyNewReactAdded', json);
   }
 
@@ -79,7 +82,7 @@ class SocketController {
       "reactTitle": reactTitle,
       "sender": currentEmployee
     };
-    print("notify other client that NewReactAdded called: json: $json");
+    //print("notify other client that NewReactAdded called: json: $json");
     socket!.emit('notifyReactRemoved', json);
   }
 
@@ -92,7 +95,7 @@ class SocketController {
       "convsType": convsType,
       "value": value
     };
-    print("notify other client that notifyRecallMessage called: json: $json");
+    //print("notify other client that notifyRecallMessage called: json: $json");
     socket!.emit('notifyRecallMessage', json);
   }
 
@@ -107,7 +110,7 @@ class SocketController {
       "messageId": messageId,
       "convsType": convsType,
     };
-    print("notify other client that notifyLockMessage called: json: $json");
+    //print("notify other client that notifyLockMessage called: json: $json");
     socket!.emit('notifyLockMessage', json);
   }
 
@@ -131,7 +134,7 @@ class SocketController {
     employees.add(currentEmployee);
 
     selectedEmployee != null ? employees.add(selectedEmployee) : {};
-    print("photo url: " + photo);
+    //print("photo url: " + photo);
 
 
     var data = jsonEncode(<String, dynamic>{
@@ -148,7 +151,7 @@ class SocketController {
 
     var response = await dio.post(
       //'https://nodejsrealtimechat.onrender.com/conversation/firstMessage',
-      chatUrl + "/conversation/firstMessage",
+      "$chatUrl/conversation/firstMessage",
       // 'http://172.28.240.1:3000/conversation/add',
       data: data,
       options: Options(headers: header),
@@ -158,7 +161,7 @@ class SocketController {
         conversation.messages![conversation.messages!.length - 1];
 
     if (response.statusCode == 200) {
-      print("First Message Successfully Sent!");
+      //print("First Message Successfully Sent!");
 
       var result = response.data;
       Conversation conversation = Conversation.fromJson(result);
@@ -168,7 +171,7 @@ class SocketController {
         "recipients": messageData.recipients,
         "convsId": conversation.id,
         "convsType": convsType,
-        "text": messageData.text,
+        "texts": messageData.texts,
         "seenBy": messageData.seenBy,
         "receivedBy": messageData.receivedBy,
         'attachments': messageData.attachments,
@@ -184,18 +187,18 @@ class SocketController {
             .firstWhere((element) => element.id == conversation.id)
             .messages!
             .add(messageData);
-        print("Conversations: ${result.length}");
+       // print("Conversations: ${result.length}");
         convsController.conversations.refresh();
 
         socket!.emit('sendMessage', messageJson);
-        print("Message Send Successfully2!");
+       // print("Message Send Successfully2!");
       } else {
         convsController.conversations.add(conversation);
-        print("Conversations: ${result.length}");
+       // print("Conversations: ${result.length}");
         convsController.conversations.refresh();
 
         socket!.emit('sendMessage', messageJson);
-        print("Message Send Successfully3!");
+       // print("Message Send Successfully3!");
       }
     }
   }
@@ -248,7 +251,7 @@ connectToSocket() {
             .build());
     socket!.connect();
     socket!.on("connect", (data) {
-      print("Connected: " + socket!.id.toString());
+      //print("Connected: " + socket!.id.toString());
     });
     return socket!;
   }
@@ -260,13 +263,14 @@ sendMessage(
     Message message,
     IO.Socket socket,
     ConversationController convsController) async {
-  print("message.replyOf");
-  //print(message.replyOf!.toJson().toString());
+  //print("message:01");
+  //print(message.texts![0].toJson().toString());
 
   var header = {
     'Content-type': 'application/json; charset=utf-8',
     'Accept': 'application/json'
   };
+  message.sender!.photo = message.sender!.photo!.substring(message.sender!.photo!.indexOf("assets"));
 
   var response = await dio.post(
     // "http://172.28.240.1:3000/conversation/sendMessage?convsId=" + convsId,
@@ -276,7 +280,7 @@ sendMessage(
       '_id': message.id,
       "sender": message.sender,
       "recipients": message.recipients,
-      'text': message.text,
+      'texts': message.texts,
       'seenBy': message.seenBy,
       'receivedBy': message.receivedBy,
       'attachments': message.attachments,
@@ -287,6 +291,11 @@ sendMessage(
     options: Options(headers: header),
   );
 
+  if(response.statusCode!=200){
+    print("Message uploaded: error: ${response}");
+    return;
+  }
+
   Message messageData = Message.fromJson(response.data);
 
   if (response.statusCode == 200) {
@@ -296,7 +305,7 @@ sendMessage(
       "recipients": messageData.recipients,
       "convsId": convsId,
       "convsType": convsType,
-      "text": messageData.text,
+      "texts": messageData.texts,
       "seenBy": messageData.seenBy,
       "receivedBy": messageData.receivedBy,
       'attachments': messageData.attachments,
@@ -307,21 +316,27 @@ sendMessage(
       'updatedAt': messageData.updatedAt,
     };
 
-    print("messageData.id");
-    print(json);
+    //print("messageData.id");
+   // print(json);
 
     convsController.conversations.firstWhere((element) => element.id==convsId).messages!.add(messageData);
     convsController.conversations.refresh();
 
     socket.emit('sendMessage', json);
-    print("Message Send Successfully1!: ${convsController.conversations.firstWhere((element) => element.id==convsId).type!}");
+   // print("Message Send Successfully1!: ${convsController.conversations.firstWhere((element) => element.id==convsId).type!}");
+
+
+
+
+
+    sendNotificationToOfflineParticipants(convsController.conversations.firstWhere((element) => element.id==convsId).participants!, message.texts!, onlineEmployees, message.sender!.fullName!);
+
+    return;
 
     var otherUserActiveStatus = "Offline";
-
     print("Online Employee: ${onlineEmployees.length}");
-
     if (convsController.conversations.firstWhere((element) => element.id==convsId).type == "Single" &&
-        onlineEmployees.length > 0) {
+        onlineEmployees.isNotEmpty) {
       if (convsController.conversations.firstWhere((element) => element.id==convsId).participants![0].employeeId ==
           message.sender!.employeeId) {
         var otherEmployee = convsController.conversations.firstWhere((element) => element.id==convsId).participants![1];
@@ -344,7 +359,7 @@ sendMessage(
           data: jsonEncode(<String, dynamic>{
             "employee_id": message.recipients![0].employeeId,
             "title": "${message.sender!.fullName!} has sent a message",
-            "message": message.text
+            "message": message.texts
           }),
           options: Options(headers: header),
         );
@@ -358,4 +373,57 @@ sendMessage(
   } else {
     print(response.data);
   }
+}
+
+
+sendNotificationToOfflineParticipants(List<EmployeeResponseModel> participants, List<MessageTextItem> texts, List<OnlineEmployee> onlineEmployees, String senderName){
+
+  List<String> onlineEmployeeIds = [];
+  for(int i=0; i<onlineEmployees.length; i++){
+    if(onlineEmployees[i].status!.toLowerCase() == "online") {
+      onlineEmployeeIds.add(onlineEmployees[i].employeeId!);
+    }
+  }
+  List<String> offlineParticipantsIds = [];
+  for(int i=0; i<participants.length; i++){
+    if(!onlineEmployeeIds.contains(participants[i].employeeId)) {
+      offlineParticipantsIds.add(participants[i].employeeId!);
+     // print("Offline: Participant: ${participants[i].employeeId}");
+    }
+  }
+
+  String message = "";
+  for(int i=0; i<texts.length; i++){
+    message+=texts[i].value!;
+  }
+
+  String notificationTitle = "";
+  List<String> constMentionTitles = generateMentionsIncludingConst()[0];
+  for(int t=0; t<texts.length; t++){
+    if(texts[t].type=="mention" && !constMentionTitles.contains(texts[t].value)){
+    //  print("notificationTitle: ${texts[t].toJson().toString()}");
+      int mentionedParticipantIndex = participants.indexWhere((element) => element.fullName==texts[t].value!.substring(1));
+      if(mentionedParticipantIndex>-1){
+        String mentionedParticipantId = participants[mentionedParticipantIndex].employeeId!;
+        offlineParticipantsIds.remove(mentionedParticipantId);
+        sendNotification([mentionedParticipantId],
+            "$senderName has mentioned you", message);
+      }
+    }else if(texts[t].type=="mention" && texts[t].value=="@Everyone"){
+      notificationTitle = "$senderName has mentioned you";
+    }else if(texts[t].type=="mention" && texts[t].value=="@Announcement"){
+      notificationTitle = "$senderName Announced!";
+    }
+  }
+
+  if(notificationTitle.isNotEmpty){
+    List<String> allParticipants = [];
+    for(int i=0; i<participants.length; i++){
+      allParticipants.add(participants[i].employeeId!);
+    }
+    sendNotification(allParticipants, notificationTitle, message);
+  }else{
+    sendNotification(offlineParticipantsIds, "$senderName has sent a message", message);
+  }
+
 }

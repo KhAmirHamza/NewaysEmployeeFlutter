@@ -10,8 +10,8 @@ import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:socket_io_client/socket_io_client.dart';
 
 class SplashScreen extends StatefulWidget {
-  Socket socket;
-  SplashScreen(this.socket, {Key? key}) : super(key: key);
+  final Socket socket;
+  const SplashScreen(this.socket, {Key? key}) : super(key: key);
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();

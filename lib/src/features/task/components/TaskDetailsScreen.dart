@@ -1,4 +1,3 @@
-import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -203,10 +202,11 @@ class TaskDetailsScreen extends StatelessWidget {
                                                 img:
                                                     "http://erp.superhomebd.com/super_home/assets/uploads/task_list/${controller.task!.taskImage}");
                                           },
-                                          child: ExtendedImage.network(
-                                            "http://erp.superhomebd.com/super_home/assets/uploads/task_list/${controller.task!.taskImage}",
-                                            width: Get.size.width,
-                                          ),
+                                           child: Text("ExtendedImage"),
+                                           //ExtendedImage.network(
+                                          //   "http://erp.superhomebd.com/super_home/assets/uploads/task_list/${controller.task!.taskImage}",
+                                          //   width: Get.size.width,
+                                          // ),
                                         ),
                                       ),
                                   const HeightSpace(),
@@ -261,11 +261,12 @@ class TaskDetailsScreen extends StatelessWidget {
                                                               img:
                                                                   "http://erp.superhomebd.com/super_home/assets/uploads/task_list/${feedback['task_files']}");
                                                         },
-                                                        child: ExtendedImage
-                                                            .network(
-                                                          "http://erp.superhomebd.com/super_home/assets/uploads/task_list/${feedback['task_files']}",
-                                                          width: Get.size.width,
-                                                        ),
+                                                        child: Text('ExtendedImage'),
+                                                        // ExtendedImage
+                                                        //     .network(
+                                                        //   "http://erp.superhomebd.com/super_home/assets/uploads/task_list/${feedback['task_files']}",
+                                                        //   width: Get.size.width,
+                                                        // ),
                                                       ),
                                                     ),
                                               ],
@@ -426,9 +427,13 @@ class TaskDetailsScreen extends StatelessWidget {
                 Visibility(
                   visible: !controller.isCommets &&
                       (controller.task!.status == 0 ||
-                          (controller.task!.status == 1)) &&
-                      controller.task!.assignedTo.toString() ==
-                          GetStorage().read('employeeId'),
+                          (controller.task!.status == 1))
+
+                      // &&
+                      // controller.task!.assignedTo.toString() ==
+                      //     GetStorage().read('employeeId')
+
+                  ,
                   child: Positioned(
                     bottom: DPadding.full,
                     left: DPadding.full,
@@ -536,8 +541,7 @@ class TaskDetailsScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "End Date",
-                  style: TextStyle(color: Colors.grey.shade700),
+                  "End Date", style: TextStyle(color: Colors.grey.shade700),
                 ),
                 const HeightSpace(),
                 Container(
@@ -650,25 +654,26 @@ class TaskDetailsScreen extends StatelessWidget {
                   // width: double.infinity,
                   child: InkWell(
                     onTap: (() => Get.back()),
-                    child: ExtendedImage.network(
-                      img,
-                      fit: BoxFit.contain,
-                      enableLoadState: true,
-                      mode: ExtendedImageMode.gesture,
-                      initGestureConfigHandler: (state) {
-                        return GestureConfig(
-                          minScale: 0.9,
-                          animationMinScale: 0.7,
-                          maxScale: 3.0,
-                          animationMaxScale: 3.5,
-                          speed: 1.0,
-                          inertialSpeed: 100.0,
-                          initialScale: 1.0,
-                          inPageView: false,
-                          initialAlignment: InitialAlignment.center,
-                        );
-                      },
-                    ),
+                    child: Text('ExtendedImage'),
+                    // ExtendedImage.network(
+                    //   img,
+                    //   fit: BoxFit.contain,
+                    //   enableLoadState: true,
+                    //   mode: ExtendedImageMode.gesture,
+                    //   initGestureConfigHandler: (state) {
+                    //     return GestureConfig(
+                    //       minScale: 0.9,
+                    //       animationMinScale: 0.7,
+                    //       maxScale: 3.0,
+                    //       animationMaxScale: 3.5,
+                    //       speed: 1.0,
+                    //       inertialSpeed: 100.0,
+                    //       initialScale: 1.0,
+                    //       inPageView: false,
+                    //       initialAlignment: InitialAlignment.center,
+                    //     );
+                    //   },
+                    // ),
                   ),
                 ),
               ),

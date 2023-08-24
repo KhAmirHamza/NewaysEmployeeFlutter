@@ -2,8 +2,8 @@ name: neways3
 description: A new Flutter project.
 
 #publish_to: "none" # Remove this line if you wish to publish to pub.dev
-
-version: 1.0.5+6
+#Last Play store version -> 1.0.7+10
+version: 1.0.7+10
 
 environment:
   sdk: ">=2.17.6 <3.0.0"
@@ -32,7 +32,6 @@ dependencies:
   timeago: #^3.3.0
   shimmer: #^2.0.0
   file_picker: #^5.2.2
-  extended_image: #^6.2.1
   qr_flutter: #^4.0.0
   flutter_barcode_scanner: #^2.0.0
   permission_handler: ^10.4.2 #^10.2.0
@@ -41,7 +40,7 @@ dependencies:
   gallery_saver: #^2.3.2
   animated_text_kit: #^4.2.2
   # firebase & notification
-  firebase_messaging: #^14.1.0
+  firebase_messaging: ^14.6.6 #^14.1.0
   firebase_core: #^2.2.0
   flutter_local_notifications: ^12.0.3+1
   drop_down_list:
@@ -50,7 +49,6 @@ dependencies:
   url_launcher: 
   # material_design_icons_flutter: ^5.0.6996
   quick_actions: ^1.0.3
-
   
   # message
   flutter_speed_dial: ^3.0.5
@@ -60,7 +58,6 @@ dependencies:
   any_animated_button: ^0.0.4
   async_button_builder: ^3.0.0+1
   
-  contacts_service: 
   cloud_firestore:
   percent_indicator: ^4.2.3
   material_dialogs: ^1.1.4
@@ -73,6 +70,12 @@ dependencies:
   flutter_animated_dialog: ^2.0.1
   html_unescape: ^2.0.0
   html: ^0.15.4
+  flutter_staggered_animations: ^1.1.1
+  #mentionable_text_field: ^0.0.2
+  package_info_plus: ^4.1.0
+  store_redirect: ^2.0.1
+  contacts_service: ^0.6.3
+  mentionable_text_field: ^0.0.2
 
 dev_dependencies:
   flutter_launcher_icons: #"^0.10.0"

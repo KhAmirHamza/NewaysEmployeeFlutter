@@ -12,39 +12,23 @@ import '../../message/controllers/SocketController.dart';
 class PhoneContactService{
   static Future uploadContact(List<String> contacts) async {
 
-
-    var innerData = jsonEncode(<String, dynamic>{
-    "name": "Khandakar Amir Hamza"
-    });
-
-    List<String> abc = [innerData];
-
-
-    var testData = {
+    var data = {
     "data": jsonEncode(contacts)
     };
 
-/*    var testData = {
-      "data":
-      //jsonEncode([innerData])
-
-      jsonEncode(contacts['data'])
-    };*/
-
-
-    print("jsonEncode(contacts)");
+  //  print("jsonEncode(contacts)");
     print(jsonEncode(contacts));
     try {
 
-      var response = await httpPost(path: '/upload_contacts', data: testData);
+      var response = await httpPost(path: '/upload_contacts', data: data);
       if (response.statusCode == 200) {
        // print(jsonDecode(response.body).toString());
-        print("response.body");
+       // print("response.body");
         print(response.body);
-        print("response.body");
+      //  print("response.body");
 
       } else {
-        print(response.body);
+      //  print(response.body);
         print({"error": "Unable to Upload Phone Contact: ${jsonEncode(contacts)}"});
       }
     } on DioException catch (e) {

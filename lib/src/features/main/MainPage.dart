@@ -1,11 +1,9 @@
 // ignore_for_file: file_names
-
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:neways3/src/features/contacts/presentation/ContactScreen.dart';
 import 'package:neways3/src/features/message/ChatScreen.dart';
 import 'package:neways3/src/features/notification/presentation/NotificationScreen.dart';
@@ -15,17 +13,14 @@ import 'package:neways3/src/features/workplace/presentation/WorkplaceScreen.dart
 import 'package:neways3/src/utils/constants.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:socket_io_client/socket_io_client.dart';
-
-import '../contacts/controllers/ContactController.dart';
 import '../contacts/models/employee_response_model.dart';
-import '../message/controllers/ConvsCntlr.dart';
-import '../message/controllers/SocketController.dart';
+//import '../message/controllers/SocketController.dart';
 import '../message/models/OnlineEmployee.dart';
 import '../profile/models/profile_response_model.dart';
 import '../profile/services/profile_service.dart';
 
 class MainPage extends StatefulWidget {
-  Socket socket;
+  final Socket socket;
   int index;
   MainPage(this.socket, this.index, {Key? key }) : super(key: key);
 
@@ -33,8 +28,41 @@ class MainPage extends StatefulWidget {
   State<MainPage> createState() => _MainPageState();
 }
 
+getEmployeeData(Socket socket, Function(OnlineEmployee newOnlineEmployee) refreshMainPage){
+  ProfileService.me().then((value) async {
+    if (value is ProfileResponseModel) {
+       EmployeeResponseModel currentEmployee = EmployeeResponseModel(
+          employeeId: value.employeeId,
+          roleName: value.roleName,
+          designationName: value.designationName,
+          departmentName: value.departmentName,
+          fullName: value.fullName,
+          personalPhone: value.personalPhone,
+          email: value.email,
+          photo: value.photo.toString().contains("http://erp.superhomebd.com/super_home/") ?
+          value.photo: "http://erp.superhomebd.com/super_home/${value.photo!}" ,
+          companyPhone: value.companyPhone,
+          companyEmail: value.companyEmail,
+          status: 0);
+       convsController.setCurrentEmployee(currentEmployee);
+    } else {
+      return null;
+    }
+  });
+}
+
+
 class _MainPageState extends State<MainPage> {
-  EmployeeResponseModel? currentEmployee;
+
+  refreshMainPage(OnlineEmployee newOnlineEmployee){
+    setState(() {
+      int onlineEmployeeIndex = onlineEmployees.indexWhere((element) => element.employeeId==newOnlineEmployee.employeeId);
+      if(onlineEmployeeIndex > -1) {
+        onlineEmployees.removeAt(onlineEmployeeIndex);
+      }
+      onlineEmployees.add(newOnlineEmployee);
+    });
+  }
 
   @override
   void initState() {
@@ -43,68 +71,50 @@ class _MainPageState extends State<MainPage> {
         statusBarColor: Colors.white,
         statusBarIconBrightness: Brightness.dark));
 
-    socket!.clearListeners();
+    final box = GetStorage();
+
+    print("boxEmployeeId: ${box.read("employeeId")}");
+    EmployeeResponseModel currentEmployee = EmployeeResponseModel(
+      employeeId: box.read("employeeId"),
+      roleName: box.read("roleName"),
+      designationName: box.read("designationName"),
+      departmentName: box.read("departmentName"),
+      fullName: box.read("firstName"),
+      personalPhone: null,
+      email: null,
+      photo: box.read("avater"),
+      companyPhone: null,
+      companyEmail: null,
+      status: null,
+      assign_group: null,
+    );
+    convsController.setCurrentEmployee(currentEmployee);
+
+    widget.socket.clearListeners();
     setupAllSocketListeners();
+    widget.socket.emit("Join", {"employee_id": box.read("employeeId"), 'socket_id': widget.socket.id, 'status': "1", 'lastCheckIn': "12345"});
 
-    socket?.on("notifyLeave", (data) {
-      print("notifyLeave called: ");
-      if(data==null) return;
-      var jsonMap = data as Map<String, dynamic>;
-      jsonMap['status'] = "0";
-      OnlineEmployee newOnlineEmployee = OnlineEmployee.fromJson(jsonMap);
-      int onlineEmployeeIndex = onlineEmployees.indexWhere((element) => element.employeeId==newOnlineEmployee.employeeId);
-      print("Json Data: $jsonMap");
-      print("Online Employee: ${newOnlineEmployee.toJson()}");
-      print("Online Employee Index: $onlineEmployeeIndex");
-      print("Leave an employee: employeeId: ${newOnlineEmployee.employeeId!}, socketId: ${newOnlineEmployee.socketId}, status:  ${newOnlineEmployee.status}, index:  $onlineEmployeeIndex");
-
-      if(onlineEmployeeIndex > -1) {
-        onlineEmployees.removeAt(onlineEmployeeIndex);
-      }
-      onlineEmployees.add(newOnlineEmployee);
-      //convsController.conversations.refresh();
-      // print("All Online Employees: ");
-      // for(int i=0; i<onlineEmployees.length; i++){
-      //   print(jsonEncode(onlineEmployees[i]));
-      // }
-      print(onlineEmployees.length);
-      setState(() {});
+    setUpJoinListener(convsController.currentEmployee!.employeeId!);
+    setUpLeaveListener((newOnlineEmployee){
+      refreshMainPage(newOnlineEmployee);
+    });
+    getEmployeeData(widget.socket, refreshMainPage);
+    PhoneContactController().loadContacts(box.read("employeeId"), "employee");
+    convsController.getConversationByUserId();
+    setState(() {
     });
   }
 
- // late int index = 2;
 
   @override
   Widget build(BuildContext context) {
+
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      ProfileService.me().then((value) async {
-        if (value is ProfileResponseModel) {
-          currentEmployee = EmployeeResponseModel(
-              employeeId: value!.employeeId,
-              roleName: value!.roleName,
-              designationName: value!.designationName,
-              departmentName: value!.departmentName,
-              fullName: value!.fullName,
-              personalPhone: value!.personalPhone,
-              email: value!.email,
-              photo: value!.photo,
-              companyPhone: value!.companyPhone,
-              companyEmail: value!.companyEmail,
-              status: 0);
-          convsController.setCurrentEmployee(currentEmployee!);
-          convsController.getConversationByUserId();
-          socket!.emit("Join", {"employee_id": value.employeeId, 'socket_id': socket!.id, 'status': "1", 'lastCheckIn': "12345"});
-          setUpJoinAndLeaveListener(
-              convsController.currentEmployee!.employeeId!);
-          PhoneContactController().loadContacts(value!.employeeId, "employee");
-        } else {
-          return null;
-        }
-      });
+
     });
 
     final screens = [
-      ChatScreen(socket!),
+      ChatScreen(widget.socket),
       const ContactScreen(),
       WorkplaceScreen(),
       const NotificationScreen(),

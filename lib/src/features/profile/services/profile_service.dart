@@ -11,7 +11,9 @@ class ProfileService {
   static Future me() async {
     final box = GetStorage();
     var response = await httpAuthPost(path: '/me', data: {});
-    // print('Response body: ${response.body}');
+    box.write('assign_group', jsonDecode(response.body)['assign_group']);
+    print('Response body: ${box.read('assign_group')}');
+
     if (response.statusCode == 200) {
       return ProfileResponseModel.fromJson(jsonDecode(response.body));
     } else {

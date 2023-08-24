@@ -1,6 +1,7 @@
 // ignore_for_file: depend_on_referenced_packages
 
-import 'package:elastic_drawer/elastic_drawer.dart';
+import 'dart:convert';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -13,24 +14,23 @@ import 'package:get_storage/get_storage.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:neways3/src/features/message/ChatScreen.dart';
 import 'package:neways3/src/features/message/controllers/SocketController.dart';
-import 'package:neways3/src/features/phone_contact/controllers/PhoneContactController.dart';
-import 'package:neways3/src/features/prebook/widgets/PrebookScreen.dart';
 import 'package:neways3/src/features/splash/SplashScreen.dart';
+import 'package:neways3/src/utils/LocalNotificationService.dart';
 import 'package:neways3/src/utils/constants.dart';
 import 'package:neways3/src/utils/functions.dart';
-import 'package:neways3/src/utils/phoneContact.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:socket_io_client/socket_io_client.dart';
 
- 
+
 final FlutterLocalNotificationsPlugin _notificationsPlugin =
     FlutterLocalNotificationsPlugin();
+
 final FirebaseMessaging messaging = FirebaseMessaging.instance;
 const AndroidNotificationChannel androidNotificationChannel =
     AndroidNotificationChannel('neways3', 'Neways3',
         importance: Importance.high);
 
-const AndroidNotificationDetails androidPlatformChannelSpecifics =
+const AndroidNotificationDetails  androidPlatformChannelSpecifics =
     AndroidNotificationDetails('neways3', 'Neways3',
         importance: Importance.max,
         priority: Priority.max,
@@ -46,27 +46,57 @@ const NotificationDetails platformChannelSpecifics =
     NotificationDetails(android: androidPlatformChannelSpecifics);
 
 Future<void> _firebaseMessageHandler(RemoteMessage message) async {
-  if (message.contentAvailable) {
-    _notificationsPlugin.show(
-        message.notification.hashCode,
-        message.notification!.title,
-        message.notification!.body,
-        platformChannelSpecifics);
+
+
+  // if (message.contentAvailable) {
+  //   _notificationsPlugin.show(
+  //       message.notification.hashCode,
+  //       message.notification!.title,
+  //       '',//jsonDecode(message.notification!.body!)['message'].toString(),
+  //       platformChannelSpecifics);
+  // }
+  // setNotification(message);
+  // Initialise  localnotification
+  print("NotificationData: ${message.data.toString()}");
+
+  if (message.data.isNotEmpty) {
+    //LocalNotificationService.display(message);
+    String? payload = message.data['message'];
+      _notificationsPlugin.show(
+          message.notification.hashCode,
+          message.data['title'],
+          message.data['message'],
+          platformChannelSpecifics, payload: payload);
   }
-  setNotification(message);
+ // setNotification(message);
+
 }
 
 void setNotification(RemoteMessage message) async {
+
+  //print(jsonEncode("Notification1: ${message.notification!.toMap().toString()}"));
+  print(jsonEncode("Data1: ${message.data['title'].toString()}"));
+
+  // Box box = await openBox(name: "notifications");
+  // box.add({
+  //   "route": "Chat",
+  //   "title": message.data['title'].toString(),
+  //   "body": message.data['message'].toString(),
+  //   "image": message.notification!.android!.imageUrl,
+  //   "read": false,
+  //   "time": DateTime.now().toIso8601String(),
+  // });
   Box box = await openBox(name: "notifications");
   box.add({
-    "title": message.notification!.title.toString(),
-    "body": message.notification!.body.toString(),
-    "image": message.notification!.android!.imageUrl,
+    "route": "Chat",
+    "title": message.data['title'].toString(),
+    "body": message.data['message'].toString(),
+    "image": message.data['image'].toString(),
     "read": false,
     "time": DateTime.now().toIso8601String(),
   });
-  Get.snackbar(message.notification!.title.toString(),
-      message.notification!.body.toString(),
+  Get.snackbar(message.data['title'].toString(),
+      message.data['message'].toString(),
       isDismissible: true,
       onTap: ((snack) =>  ChatScreen(socket!)),
       colorText: Colors.white,
@@ -80,25 +110,43 @@ void setNotification(RemoteMessage message) async {
 }
 
 void main() async {
+
+  SocketController socketController = SocketController();
+  socket =  socketController.getInstance();
+
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   // var isEnabled = await Wakelock.enabled;
-  // if (!isEnabled) {
+  // if (!isEnabled) { 
   //   await Wakelock.enable();
   // }
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessageHandler);
-  FirebaseMessaging.onMessage
-      .listen((RemoteMessage message) => _firebaseMessageHandler(message));
-  messaging.setForegroundNotificationPresentationOptions(
-      alert: true, badge: true, sound: true);
 
-  _notificationsPlugin
-      .resolvePlatformSpecificImplementation<
+
+
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessageHandler);
+
+  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+    print("onMessageOpenedApp : called");
+    print("Data2: ${message.data['title'].toString()}");
+    GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
+    // Navigator.push(
+    //     navigatorKey.currentState!.context,
+    // MaterialPageRoute(
+    // builder: (context) => ChatScreen(socket!)));
+  });
+
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) => _firebaseMessageHandler(message));
+
+
+
+  messaging.setForegroundNotificationPresentationOptions(alert: true, badge: true, sound: true);
+
+  _notificationsPlugin.resolvePlatformSpecificImplementation<
           AndroidFlutterLocalNotificationsPlugin>()
       ?.createNotificationChannel(androidNotificationChannel);
 
-  _notificationsPlugin
-      .resolvePlatformSpecificImplementation<
+  _notificationsPlugin.resolvePlatformSpecificImplementation<
           IOSFlutterLocalNotificationsPlugin>()
       ?.requestPermissions(
         alert: true,
@@ -126,11 +174,8 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-
     SocketController socketController = SocketController();
     socket =  socketController.getInstance();
-
-
   }
 
   @override
@@ -163,6 +208,10 @@ class _MyAppState extends State<MyApp> {
       ],
       builder: EasyLoading.init(),
       home:
+      // MentionableTextFieldWidget([
+      //   MentionItem("Khandakar"),
+      //   MentionItem("Amir"),
+      //   MentionItem("Hamza")])
 
         //PrebookScreen()
 
@@ -174,10 +223,19 @@ class _MyAppState extends State<MyApp> {
       // )
 
       SplashScreen(socket!)
-
-
     );
   }
+}
+
+setUpNotificationClick(FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin){
+  const AndroidInitializationSettings initializationSettingsAndroid =
+  AndroidInitializationSettings('app_icon');
+
+
+  const InitializationSettings initializationSettings = InitializationSettings(
+      android: initializationSettingsAndroid);
+  // await flutterLocalNotificationsPlugin.initialize(initializationSettings,
+  //     onSelectNotification: onSelectNotification);
 }
 
 

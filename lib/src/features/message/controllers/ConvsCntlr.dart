@@ -1,25 +1,70 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:neways3/src/features/contacts/controllers/ContactController.dart';
 import 'package:neways3/src/features/contacts/models/employee_response_model.dart';
-import 'package:neways3/src/features/message/bloc/p_to_p_chat_page.dart';
+import 'package:neways3/src/features/message/bloc/single_chat_page.dart';
+import 'package:neways3/src/features/message/services/ConversationService.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
+import '../../../utils/functions.dart';
 import '../models/Conversation.dart';
+import '../models/Mentionable.dart';
 import '../models/Message.dart';
 import '../utils/Constant.dart';
+import 'CustomTextEditingController.dart';
 import 'SocketController.dart';
 
 class ConversationController extends GetxController implements SocketListeners {
+  late bool isLoadding = false;
   EmployeeResponseModel? currentEmployee;
 
   var conversations = <Conversation>[].obs;
   final dio = Dio();
   SocketController socketController = SocketController();
+  List<Mentionable> matchMentionableBySearch = [];
+  List<int> selectedMentionsIndexList = [];
+
 
   setCurrentEmployee(EmployeeResponseModel currentEmployee) {
     this.currentEmployee = currentEmployee;
+  }
+
+  addParticipant(String convsId, EmployeeResponseModel newParticipant) async {
+    var header = {
+      'Content-type': 'application/json; charset=utf-8',
+      'Accept': 'application/json'
+    };
+    var response = await dio.post(
+      "$chatUrl/v1/conversation/addParticipant?convsId=$convsId",
+      data: newParticipant.toJson(),
+      options: Options(headers: header),
+    );
+    if (response.statusCode == 200) {
+     // print("Added Participant: ConvsId: $convsId , EmployeeId: ${newParticipant.employeeId}");
+      conversations[conversations.indexWhere((element) => element.id==convsId)].participants!.add(newParticipant);
+      conversations.refresh();
+    }
+  }
+
+  removeParticipant(String convsId, String participantEmployeeId) async {
+    var header = {
+      'Content-type': 'application/json; charset=utf-8',
+      'Accept': 'application/json'
+    };
+    var response = await dio.delete(
+      "$chatUrl/v1/conversation/deleteParticipant?convsId=$convsId&employee_id=$participantEmployeeId",
+      options: Options(headers: header),
+    );
+    if (response.statusCode == 200) {
+      //print("Removed Participant: ConvsId: $convsId, EmployeeId: $participantEmployeeId");
+      conversations[conversations.indexWhere((element) => element.id==convsId)].participants!.removeWhere((element) => element.employeeId == participantEmployeeId);
+      conversations.refresh();
+    }
   }
 
   sendFirstMessage(
@@ -35,14 +80,12 @@ class ConversationController extends GetxController implements SocketListeners {
       String photo,
       EmployeeResponseModel owner,
       List<EmployeeResponseModel> admins) async {
-
-      print("Owner: ${owner.employeeId!}");
-      print("Current Employee: ${currentEmployee!.employeeId!}");
-      //print("Selected Employee: ${selectedEmployee!.employeeId!}"); //selectedEmployee can be null
-      print("Message Recipients: ${jsonEncode(message.recipients)}");
-
+      EasyLoading.show();
+      isLoadding = true;
       socketController.sendFirstMessage(currentEmployee!, selectedEmployee,
           convsType, message, title, photo, groupEmployees, owner, admins, this);
+      EasyLoading.dismiss();
+      isLoadding = true;
 
   }
 
@@ -105,16 +148,10 @@ class ConversationController extends GetxController implements SocketListeners {
     React react = React(title: reactTitle, sender: currentEmployee!);
     socketController.notifyReactRemoved(
         convsId, messageId, convsType, reactTitle, currentEmployee!);
-   // print(conversations[conversations.indexWhere((element) => element.id==convsId)].messages![messageIndex].reacts!.length);
-
-    //print("Current Employee ID: " +currentEmployee!.employeeId!);
-    //print("Current Employee ID: " +currentEmployee!.employeeId!);
-
     conversations[conversations.indexWhere((element) => element.id==convsId)]
         .messages![messageIndex]
         .reacts!
         .removeWhere((element) => ((element.title == react.title) && (element.sender!.employeeId! == react.sender!.employeeId!)));
-    //print(conversations[conversations.indexWhere((element) => element.id==convsId)].messages![messageIndex].reacts!.length);
     conversations.refresh();
   }
 
@@ -137,19 +174,13 @@ class ConversationController extends GetxController implements SocketListeners {
     if (response.statusCode == 200) {
       socketController.notifyMessageReceived(
           convsId, convsType, currentEmployee!.employeeId!);
-
-      print("seenMessage requested to called");
-      pToP_ChatPage.seenMessage(this, convsId, convsType, messageId, socket,
+      SingleChatPage.seenMessage(this, convsId, convsType, messageId, socket,
           currentEmployee!.employeeId!);
     }
   }
 
   seenMessage(String convsId, String convsType, String messageId,
       IO.Socket socket) async {
-    print("seenMessage called");
-    print(messageId);
-    print(convsId);
-    print(currentEmployee!.employeeId);
     var header = {
       'Content-type': 'application/json; charset=utf-8',
       'Accept': 'application/json'
@@ -157,7 +188,6 @@ class ConversationController extends GetxController implements SocketListeners {
 
     var response = await dio.post(
       "$chatUrl/conversation/seenMessage?convsId=$convsId",
-      // "http://172.28.240.1:3000/conversation/seenMessage?convsId=" + convsId,
       data: jsonEncode(<String, dynamic>{
         'messageId': messageId,
         "currentEmployeeId": currentEmployee!.employeeId,
@@ -172,18 +202,44 @@ class ConversationController extends GetxController implements SocketListeners {
       print("Something went wrong");
     }
   }
+  Future<bool> getMessages(String convsId, int skip, int limit, minutes) async{
+
+    EasyLoading.show();
+    isLoadding = true;
+    var url = "$chatUrl/v1/conversation/getConvsData?skip=$skip&messages=1&limit=$limit&convsId=$convsId&minutes=$minutes";
+    var headers = {
+      'Content-type': 'application/json; charset=utf-8',
+      'Accept': 'application/json'
+    };
+    var response = await dio.get(url, options: Options(headers: headers));
+    if(response.statusCode == 200){
+      int convsIndex = conversations.indexWhere((element) => element.id == convsId);
+      if(convsIndex== -1) return false;
+      Conversation conversation = Conversation.fromJson(response.data[0]);
+      if(skip==0) { //If only calling for first time and not calling for pagination
+        conversations[convsIndex].messages!.clear();
+        conversations[convsIndex].messages!.addAll(conversation.messages!.reversed.toList());
+      }else{
+        conversations[convsIndex].messages = [...conversation.messages!.reversed.toList(), ...conversations[convsIndex].messages!.toList()];
+      }
+      conversations.refresh();
+      EasyLoading.dismiss();
+      isLoadding = false;
+      return true;
+    }
+    EasyLoading.dismiss();
+    isLoadding = false;
+    return false;
+
+  }
 
   void getConversationByUserId() async {
-    print("currentEmployeeId: " + currentEmployee!.employeeId!);
-
     var header = {
       'Content-type': 'application/json; charset=utf-8',
       'Accept': 'application/json'
     };
     var response = await dio.get(
-      //"$chatUrl/conversation/get?employeeId=${currentEmployee!.employeeId}assign_group=${currentEmployee!.assign_gr
-      // .oup}",
-      chatUrl + "/conversation/get?employeeId=${currentEmployee!.employeeId}",
+      "$chatUrl/v1/conversation/getConvsData?title=1&photo=1&skip=0&type=1&messages=1&participants=1&owner=1&limit=1&minutes=10&employeeId=${currentEmployee!.employeeId}",
       options: Options(headers: header),
     );
     if (response.statusCode == 200) {
@@ -192,13 +248,22 @@ class ConversationController extends GetxController implements SocketListeners {
       conversations.clear();
       for (int i = 0; i < result.length; i++) {
         Conversation conversation = Conversation.fromJson(result[i]);
-        List<Message> messages = <Message>[];
         conversations.add(conversation);
       }
-      print("Conversations: " + result.length.toString());
-      int newaysGroupIndex = conversations.indexWhere((element) => element.id=="C1688466708729");
-      conversations.insert(0, conversations.firstWhere((element) => element.id=="C1688466708729"));
-      conversations.removeAt(newaysGroupIndex+1);
+      int newaysGroupIndex = conversations.indexWhere((element) => element.id==NEWAYS_GROUP_ID);
+      if(newaysGroupIndex>-1){
+        conversations.insert(0, conversations.firstWhere((element) => element.id==NEWAYS_GROUP_ID));
+        conversations.removeAt(newaysGroupIndex+1);
+      }
+      bool isCurrentEmployeeAdded = conversations[newaysGroupIndex].participants!.indexWhere((element) => element.employeeId==currentEmployee!.employeeId)>-1;
+      print("isCurrentEmployeeAdded: $isCurrentEmployeeAdded, currentEmployee!.assign_group: ${GetStorage().read('assign_group')!}");
+      if(!isCurrentEmployeeAdded && "${GetStorage().read('assign_group')}" =="1"){
+        //todo... add Current employee to neways group...
+        print("Current Employee Should Add!");
+        addParticipant(conversations[newaysGroupIndex].id!, currentEmployee!); //Selected Employee
+      }else if(!isCurrentEmployeeAdded && "${GetStorage().read('assign_group')}" =="0"){
+        conversations.removeWhere((element) => element.id==NEWAYS_GROUP_ID);
+      }
       conversations.refresh();
     }
   }
@@ -250,7 +315,7 @@ class ConversationController extends GetxController implements SocketListeners {
     // TODO: implement onMessageReceived
 
     var jsonMap = data as Map<String, dynamic>;
-    print("Other User Has Received Message: " + jsonMap.toString());
+   // print("Other User Has Received Message: " + jsonMap.toString());
 
     int convsIndex = 0;
     for (int i = 0; i < conversations.length; i++) {
@@ -275,7 +340,7 @@ class ConversationController extends GetxController implements SocketListeners {
   @override
   void onMessageSeen(IO.Socket socket, data) {
     var jsonMap = data as Map<String, dynamic>;
-    print("Other User Has Seen Message: " + jsonMap.toString());
+   // print("Other User Has Seen Message: " + jsonMap.toString());
 
     int convsIndex = 0;
     for (int i = 0; i < conversations.length; i++) {
@@ -299,13 +364,14 @@ class ConversationController extends GetxController implements SocketListeners {
   @override
   void onMessageSend(IO.Socket socket, data) {
     // TODO: implement onMessageSend
-
-    print("onMessageSend called");
+    print("onMessageSend called-->data->");
+    print(data);
 
 
     var jsonMap = data as Map<String, dynamic>;
 
-    if ((conversations.length == 0 ||
+
+    if ((conversations.isEmpty ||
         !conversations.any((item) => item.id == jsonMap['convsId']))) {
       getConversationByUserId();
       return;
@@ -360,9 +426,9 @@ class ConversationController extends GetxController implements SocketListeners {
 
       Message message = Message.fromJson(jsonMap);
 
-      // print("message.toJson()");
-      // print(data);
-      // print(message.toJson());
+       // print("message.toJson()");
+       // print(data);
+       // print(message.toJson());
 
       if (!(message.receivedBy!.contains(currentEmployee!.employeeId!))) {
         message.receivedBy!.add(currentEmployee!.employeeId!);
@@ -387,7 +453,7 @@ class ConversationController extends GetxController implements SocketListeners {
   void onNewReactAdded(IO.Socket socket, data) {
     // TODO: implement onNewReactAdded
     var jsonMap = data as Map<String, dynamic>;
-    print("A User Has Reacted into the Message: $jsonMap");
+    //print("A User Has Reacted into the Message: $jsonMap");
 
     int convsIndex = 0;
     for (int i = 0; i < conversations.length; i++) {
@@ -423,7 +489,7 @@ class ConversationController extends GetxController implements SocketListeners {
   void onReactRemoved(IO.Socket socket, data) {
     // TODO: implement onNewReactAdded
     var jsonMap = data as Map<String, dynamic>;
-    print("A User Has Remove React into the Message: $jsonMap");
+   // print("A User Has Remove React into the Message: $jsonMap");
 
     int convsIndex = 0;
     for (int i = 0; i < conversations.length; i++) {
@@ -448,22 +514,21 @@ class ConversationController extends GetxController implements SocketListeners {
         .reacts!
         //.removeWhere((element) => element.title == react.title);
         .removeWhere((element) => ((element.title == react.title) && (element.sender!.employeeId! == react.sender!.employeeId!)));
-    print(
-        "now react data: ${conversations[convsIndex].messages![messageIndex].reacts!.length}");
+   // print("now react data: ${conversations[convsIndex].messages![messageIndex].reacts!.length}");
     conversations.refresh();
   }
 
   @override
   void onLockMessage(IO.Socket socket, data) {
     // TODO: implement onLockMessage
-    print("onLockMessage");
+    //print("onLockMessage");
     print(data);
   }
 
   @override
   void onRecallMessage(IO.Socket socket, data) {
     // TODO: implement onRecallMessage
-    print("onRecallMessage");
+   // print("onRecallMessage");
     print(data);
 
     var jsonMap = data as Map<String, dynamic>;
@@ -489,11 +554,44 @@ class ConversationController extends GetxController implements SocketListeners {
         break;
       }
     }
-
     conversations[convsIndex].messages![messageIndex].recall = value;
-    print("convsRecalvalue");
-    print(value);
-    print(conversations[convsIndex].messages![messageIndex].recall);
+  //  print("convsRecalvalue");
+  //  print(value);
+   // print(conversations[convsIndex].messages![messageIndex].recall);
     conversations.refresh();
+  }
+
+  updateConversation(String convsId, String? title, String? photo) async{
+
+    await ConversationService.updateConversation(convsId, title, photo, (data)
+      {
+        int convsIndex = conversations.indexWhere((element) => element.id==convsId);
+        if(title!=null){
+        conversations[convsIndex].title = title;
+        }else if(photo!=null){
+        conversations[convsIndex].photo = photo;
+        }
+        conversations.refresh();
+      }
+    );
+  }
+
+
+  openGalleryUploadImageAsBase64(Function(String url, String filename) onSuccess) async {
+    var file = await ImagePicker().pickImage(source: ImageSource.gallery); //pick an image
+    //convert file...
+    List<int> imageBytes = await file!.readAsBytes();
+    String base64Image = base64Encode(imageBytes);
+    //String base64Image = base64Encode(file.readAsBytesSync());
+    String filename = file.path.split('/').last;
+    ConversationService.uploadImageAsBase64(base64Image, filename, (data) => onSuccess(data['url'], filename));
+  }
+
+  uploadImageAsMultipartLaravel(Function(String imageUrl, String filename) onSuccess) async {
+    chooseImageFileFromGallery((File galleryFile) async {
+      ConversationService.uploadImageAsMultipartLaravel(galleryFile, (imageUrl) => {
+        onSuccess("http://erp.superhomebd.com/super_home/$imageUrl", imageUrl.substring(imageUrl.indexOf("assets")))
+      });
+    });
   }
 }

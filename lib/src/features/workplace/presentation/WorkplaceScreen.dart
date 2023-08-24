@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
+import 'package:neways3/src/features/contacts/presentation/ContactScreen.dart';
 import 'package:neways3/src/features/leave/components/LeaveApproveScreen.dart';
 import 'package:neways3/src/features/leave/components/LeaveScreen.dart';
 import 'package:neways3/src/features/fired_employee/components/FiredEmployeeScreen.dart';
@@ -13,6 +14,7 @@ import 'package:neways3/src/features/prebook/widgets/PrebookScreen.dart';
 import 'package:neways3/src/features/purchase_money/components/PurchaseMoneyApproveScreen.dart';
 import 'package:neways3/src/features/purchase_money/components/PurchaseMoneyScreen.dart';
 import 'package:neways3/src/features/requisition/components/view_availablle_requisition.dart';
+import 'package:neways3/src/features/task/components/DHeadTaskApproval.dart';
 import 'package:neways3/src/features/workplace/controller/WorkplaceController.dart';
 import 'package:neways3/src/utils/constants.dart';
 
@@ -222,7 +224,7 @@ class WorkplaceScreen extends StatelessWidget {
                         ),
                       ),
                       Visibility(
-                        visible: isDepHead && !controller.isHidden && !isBoss,
+                        visible: (isDepHead && !controller.isHidden && !isBoss),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -295,6 +297,25 @@ class WorkplaceScreen extends StatelessWidget {
                                         Get.to(const FiredEmployeeScreen()),
                                     title: 'Fired',
                                   ),
+
+                                  DashboardGrid(
+                                    color: Colors.green,
+                                    icon: Icons.work_off_outlined,
+                                    onPress: () {
+                                      requisitionController.getAllAvailableRequisition(1, 3);
+                                      Navigator.push(context,
+                                          MaterialPageRoute(builder: (context) => ViewAvailableRequisition(requisitionController, 1, 3))
+                                      );
+                                    }, title: 'Requisition Approval',
+                                  ),
+                                  // DashboardGrid(
+                                  //   color: Colors.green,
+                                  //   icon: Icons.work_off_outlined,
+                                  //   onPress: () {
+                                  //     Get.to(() => DHeadTaskApproval());,
+                                  //
+                                  //   }, title: 'Task Approval',
+                                  // ),
                                 ],
                               ),
                             ),
@@ -376,16 +397,7 @@ class WorkplaceScreen extends StatelessWidget {
                                         Get.to(const FiredEmployeeScreen()),
                                     title: 'Fired',
                                   ),
-                                  DashboardGrid(
-                                    color: Colors.green,
-                                    icon: Icons.work_off_outlined,
-                                    onPress: () {
-                                      requisitionController.getAllAvailableRequisition(1, 3);
-                                    Navigator.push(context,
-                                      MaterialPageRoute(builder: (context) => ViewAvailableRequisition(requisitionController, 1, 3))
-                                    );
-                                    }, title: 'Requisition Approval',
-                                  ),
+
                                 ],
                               ),
                             ),

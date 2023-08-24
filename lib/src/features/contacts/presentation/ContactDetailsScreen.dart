@@ -6,7 +6,7 @@ import 'package:get/get.dart';
 import 'package:neways3/src/features/contacts/controllers/ContactController.dart';
 import 'package:neways3/src/features/contacts/models/employee_response_model.dart';
 import 'package:neways3/src/features/message/ChatScreen.dart';
-import 'package:neways3/src/features/message/bloc/p_to_p_chat_page.dart';
+import 'package:neways3/src/features/message/bloc/single_chat_page.dart';
 import 'package:neways3/src/features/message/controllers/ConvsCntlr.dart';
 import 'package:neways3/src/features/message/controllers/SocketController.dart';
 import 'package:neways3/src/utils/constants.dart';
@@ -106,7 +106,7 @@ class ContactDetailsScreen extends StatelessWidget {
                                       borderRadius:
                                           BorderRadius.circular(DPadding.full)),
                                   child: Text(
-                                      employee.status! == 1
+                                      (employee.status! == 1 || employee.status! == "1")
                                           ? "On Duty"
                                           : "Off Duty",
                                       style: TextStyle(
@@ -243,7 +243,7 @@ class ContactDetailsScreen extends StatelessWidget {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => pToP_ChatPage(
+                                  builder: (context) => SingleChatPage(
                                       convsController,
                                       convsController.currentEmployee!,
                                       employee,
@@ -270,7 +270,7 @@ class ContactDetailsScreen extends StatelessWidget {
                               id: "Initial",
                               sender: convsController.currentEmployee,
                               recipients: [employee],
-                              text: "Initial",
+                              texts: [],
                               seenBy: seenBy,
                               receivedBy: receivedBy,
                               attachments: [
@@ -286,10 +286,11 @@ class ContactDetailsScreen extends StatelessWidget {
                           convsController.sendFirstMessage(context, socket!, contactController, convsController, employee, null,
                               employee.fullName!, message , "Single", photo, convsController.currentEmployee!, admins);
 
+                          convsController.getMessages(convsController.conversations[convsIndex].id!, 0, 50, 10);
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => pToP_ChatPage(
+                                  builder: (context) => SingleChatPage(
                                       convsController,
                                       convsController.currentEmployee!,
                                       employee,

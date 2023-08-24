@@ -14,6 +14,7 @@ import 'package:neways3/src/features/salary/presentation/SalaryScreen.dart';
 import 'package:neways3/src/features/wallet/presentation/WalletScreen.dart';
 import 'package:neways3/src/utils/constants.dart';
 import 'package:neways3/src/utils/size_config.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../../utils/functions.dart';
@@ -24,6 +25,7 @@ import '../../update_apps/UpdateAppsScreen.dart';
 import 'ProfileDetailsScreen.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:material_dialogs/material_dialogs.dart';
+import 'package:store_redirect/store_redirect.dart';
 
 
 class ProfileScreen extends StatelessWidget {
@@ -337,8 +339,12 @@ class ProfileScreen extends StatelessWidget {
                             ProfileListTile(
                                 icon: 'update.svg',
                                 title: 'Update',
-                                onPress: (() =>
-                                    Get.to(const UpdateAppsScreen(title: '')))),
+                                onPress: (() async {
+                                  //PackageInfo packageInfo = await PackageInfo.fromPlatform();
+                                  //Get.to(UpdateAppsScreen(title: '', version:  packageInfo.version));
+                                  StoreRedirect.redirect();
+                                }
+                                )),
                             const Divider(),
                             // ProfileListTile(
                             //   icon: 'setting.svg',

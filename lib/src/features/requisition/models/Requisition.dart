@@ -27,6 +27,8 @@ class Requisition {
   String? uploaderInfo;
   String? data;
   String? dateFilter;
+  String? productName;
+  String? productImage;
 
   Requisition(
       {this.id,
@@ -56,7 +58,11 @@ class Requisition {
         this.uploaderId,
         this.uploaderInfo,
         this.data,
-        this.dateFilter});
+        this.dateFilter,
+        this.productName,
+        this.productImage
+
+      });
 
   Requisition.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -87,6 +93,8 @@ class Requisition {
     uploaderInfo = json['uploader_info'];
     data = json['data'];
     dateFilter = json['date_filter'];
+    productName = json['product_name'];
+    productImage = json['product_image'];
   }
 
   Map<String, dynamic> toJson() {
@@ -119,6 +127,8 @@ class Requisition {
     data['uploader_info'] = this.uploaderInfo;
     data['data'] = this.data;
     data['date_filter'] = this.dateFilter;
+    data['product_name'] = this.productName;
+    data['product_image'] = this.productImage;
     return data;
   }
 }

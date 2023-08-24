@@ -10,12 +10,13 @@ import '../models/TaskResponse.dart';
 import 'TaskDetailsScreen.dart';
 
 class DepartmentTaskScreen extends StatelessWidget {
-  const DepartmentTaskScreen({super.key});
+  final String? departmentName;
+  const DepartmentTaskScreen( {this.departmentName, super.key});
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder<TaskController>(
-        init: TaskController(),
+        init: TaskController(),//departmentName: departmentName
         builder: (controller) {
           return Scaffold(
             body: SafeArea(

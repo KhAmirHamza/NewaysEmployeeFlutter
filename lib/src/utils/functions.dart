@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:audioplayers/audioplayers.dart';
 import 'package:client_information/client_information.dart';
 import 'package:drop_down_list/drop_down_list.dart';
@@ -7,6 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:neways3/src/utils/constants.dart';
 import 'package:path_provider/path_provider.dart';
@@ -192,21 +195,6 @@ void showInSnackBar(BuildContext context, String text) {
 }
 
 Future<void> playScanSound() async {
-  // final AudioCache _audioCache = AudioCache(
-  //   prefix: 'audio/',
-  //   fixedPlayer: AudioPlayer()..setReleaseMode(ReleaseMode.STOP),
-  // );
-
-
-  //AudioCache('asstes/audio/scan_sound.mp3');
-
- // AudioPlayer player = AudioPlayer()..setReleaseMode(ReleaseMode.stop);
-  //AudioPlayer player = AudioPlayer();
-  //player.play(AssetSource('audio/scan_sound.mp3'));
-
-
-
-
 
   FlutterRingtonePlayer.play(
     fromAsset: "assets/audio/scan_sound.mp3",
@@ -217,3 +205,24 @@ Future<void> playScanSound() async {
     asAlarm: false, // Android only - all APIs
   );
 }
+
+
+File? galleryFile;
+String? imagePath;
+final picker = ImagePicker();
+Future chooseImageFileFromGallery(Function(File gallaryFile) onSuccess) async {
+  final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+  XFile? xfilePick = pickedFile;
+  if (xfilePick != null) {
+    galleryFile = File(pickedFile!.path);
+    onSuccess(galleryFile!);
+  } else {
+    print("Nothing is selected");
+  }
+}
+
+buildMessageTextArray(){
+
+}
+
+

@@ -7,8 +7,8 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:neways3/src/features/contacts/controllers/ContactController.dart';
 import 'package:neways3/src/features/contacts/models/employee_response_model.dart';
-import 'package:neways3/src/features/contacts/presentation/AddContactScreen.dart';
 import 'package:neways3/src/features/contacts/presentation/ContactDetailsScreen.dart';
+import 'package:neways3/src/features/task/widgets/ContactPerson.dart';
 import 'package:neways3/src/utils/constants.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 
@@ -20,6 +20,8 @@ class ContactScreen extends StatelessWidget {
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
         statusBarColor: Colors.white,
         statusBarIconBrightness: Brightness.dark));
+
+
     return SafeArea(
       child: Scaffold(
         body: GetBuilder<ContactController>(
@@ -114,7 +116,14 @@ class ContactScreen extends StatelessWidget {
                                 itemBuilder: (context, index) {
                                   EmployeeResponseModel employee =
                                       controller.employees[index];
-                                  return ContactPersone(employee: employee);
+                                  onItemTap(EmployeeResponseModel selectedEmployee){
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => ContactDetailsScreen(employee: selectedEmployee),
+                                        ));
+                                  }
+                                  return ContactPerson(employee: employee, onItemTap: onItemTap,);
                                 }),
                           ),
                         ],
@@ -129,70 +138,3 @@ class ContactScreen extends StatelessWidget {
   }
 }
 
-class ContactPersone extends StatelessWidget {
-  EmployeeResponseModel employee;
-  ContactPersone({
-    required this.employee,
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: DPadding.half / 2),
-      child: InkWell(
-        onTap: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ContactDetailsScreen(employee: employee),
-              ));
-        },
-        child: Row(
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(DPadding.half),
-              child: CachedNetworkImage(
-                  imageUrl: employee.photo!,
-                  placeholder: (context, url) =>
-                      const CircularProgressIndicator(),
-                  errorWidget: ((context, error, stackTrace) => Center(
-                        child: Text(
-                          "No Image",
-                          style: TextStyle(
-                              fontSize: 10, color: Colors.grey.shade400),
-                        ),
-                      )),
-                  width: 48,
-                  height: 48,
-                  fit: BoxFit.fill),
-            ),
-            const WidthSpace(),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  employee.fullName!,
-                  style: DTextStyle.textTitleStyle3,
-                ),
-                Text(
-                  employee.designationName!,
-                  style: TextStyle(color: Colors.grey.shade500),
-                )
-              ],
-            ),
-            const Spacer(),
-            Container(
-              width: 5,
-              height: 5,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(50),
-                color: employee.status! == 1 ? Colors.green : Colors.red,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}

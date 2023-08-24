@@ -11,15 +11,15 @@ class RequisitionService{
     try {
       var response = await httpGet(path: '/requisition_approval_list/$branchId/$departmentId');
 
-      if (response.statusCode == 200) {
-        print(jsonDecode(response.body));
+      if (response.statusCode == 200) { //inventory_new_requisition_item
+        //print(jsonDecode(response.body));
         List<dynamic> result = jsonDecode(response.body);
         controller.requisitions.clear();
         for (var element in result) {
           controller.requisitions.add(Requisition.fromJson(element));
         }
       } else {
-        print(response.body);
+       // print(response.body);
         return {"error": "Unable to getAllAvailableRequisition"};
       }
     } on DioException catch (e) {
@@ -31,7 +31,7 @@ class RequisitionService{
     }
   }
   
-  static Future updateRequisitionApprovalStatus(String requisition_id, String requisition_type) async {
+  static Future updateRequisitionApprovalStatus(String requisition_id, String requisition_type, Function(dynamic data) onSuccess) async {
     try {
       var data = {
         'requisition_id': requisition_id,
@@ -40,10 +40,10 @@ class RequisitionService{
 
       var response = await httpPost(path: '/department-head-requisition-approval', data: data);
       if (response.statusCode == 200) {
-        print(jsonDecode(response.body));
+        onSuccess(response.body);
         return jsonDecode(response.body)['message'];
       } else {
-        print(jsonDecode(response.body));
+       // print(jsonDecode(response.body));
         return {"error": "Unable to updateRequisitionApprovalStatus"};
       }
     } on DioException catch (e) {

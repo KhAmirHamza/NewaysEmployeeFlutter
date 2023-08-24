@@ -19,7 +19,7 @@ class NotificationController extends GetxController {
     for (var element in data) {
       notifications.add(element);
     }
-    print(notifications);
+    //print(notifications);
     isLoading = false;
     update();
   }

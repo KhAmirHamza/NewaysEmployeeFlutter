@@ -9,21 +9,42 @@ import 'package:neways3/src/utils/constants.dart';
 import 'package:neways3/src/utils/httpClient.dart';
 
 class ContactService {
-  static Future allUsers({size, status, search}) async {
+  static Future allUsers({size, status, search, department_name}) async {
+    print("departmentName: $department_name");
     final box = GetStorage();
     Map<String, String>? headers = {
       "accept": "application/json",
       "Content-Type": "application/json",
       "authorization": "Bearer ${box.read('token')}"
     };
-    var response = await httpAuthGet(path: '/employees/$size/$status/$search');
-    print(response.body);
+    String path = '/employees/$size/$status/$search';
+    if(department_name!=null){
+      path+='/$department_name';
+    }
+    print("path: $path");
+
+    var response = await httpAuthGet(path: path);
+    print("Department Name: ____________${response.body}__________");
     if (response.statusCode == 200) {
       return employeeResponseModelFromJson(jsonDecode(response.body)['data']);
     } else {
       return {"error": "Server Error"};
     }
   }
+
+
+
+  static Future getEmployee({employeeId}) async {
+    var response = await httpAuthGet(path: '/employees/$employeeId');
+    //print(response.body);
+    if (response.statusCode == 200) {
+      return EmployeeResponseModel.fromJson(jsonDecode(response.body)[0]);
+    } else {
+      return {"error": "Server Error"};
+    }
+  }
+
+
 
   static Future addContact(EmployeeResponseModel employee) async {
     final box = GetStorage();
@@ -46,9 +67,9 @@ class ContactService {
         "designation": employee.designationName!.toString()
       }.toString()
     };
-    print(data);
+    //print(data);
     var response = await http.post(url, headers: headers, body: data);
-    print(response);
+    //print(response);
     if (response.statusCode == 200) {
       // return ConversationModel.fromJson(jsonDecode(response.body));
     } else {
