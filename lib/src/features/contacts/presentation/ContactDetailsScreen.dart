@@ -11,6 +11,7 @@ import 'package:neways3/src/features/message/controllers/ConvsCntlr.dart';
 import 'package:neways3/src/features/message/controllers/SocketController.dart';
 import 'package:neways3/src/utils/constants.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../main/MainPage.dart';
 import '../../message/models/Conversation.dart';
 import '../../message/models/Message.dart';
 
@@ -286,19 +287,26 @@ class ContactDetailsScreen extends StatelessWidget {
                           convsController.sendFirstMessage(context, socket!, contactController, convsController, employee, null,
                               employee.fullName!, message , "Single", photo, convsController.currentEmployee!, admins);
 
-                          convsController.getMessages(convsController.conversations[convsIndex].id!, 0, 50, 10);
-                          Navigator.push(
+
+                          Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => SingleChatPage(
-                                      convsController,
-                                      convsController.currentEmployee!,
-                                      employee,
-                                      socket!,
-                                      convsController.conversations[convsIndex].id!,
-                                      contactController)));
-                        }
+                                  builder: (context) =>
+                                  //HomePage(widget.userController, widget.currentUser, widget.socket, widget.convsController)
+                                  MainPage(socket!, 0)));
 
+                          // convsController.getMessages(convsController.conversations.last.id!, 0, 50, 10);
+                          // Navigator.push(
+                          //     context,
+                          //     MaterialPageRoute(
+                          //         builder: (context) => SingleChatPage(
+                          //             convsController,
+                          //             convsController.currentEmployee!,
+                          //             employee,
+                          //             socket!,
+                          //             convsController.conversations.last.id!,
+                          //             contactController)));
+                        }
                       },
                       child: Column(
                         children: [
@@ -352,7 +360,8 @@ class ContactDetailsScreen extends StatelessWidget {
                               style: TextStyle(
                                   color: DColors.primary,
                                   fontSize: 13,
-                                  fontWeight: FontWeight.bold),
+                                  fontWeight: FontWeight.bold
+                              ),
                             )
                           ],
                         ),

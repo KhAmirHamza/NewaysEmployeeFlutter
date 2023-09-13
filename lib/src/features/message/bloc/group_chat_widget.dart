@@ -338,6 +338,8 @@ class _MessageListWidgetState extends State<MessageListWidget> {
   }
 
   refreshMainPage() {
+
+    print("refreshMainPage called");
     setState(() {});
   }
 
@@ -1067,7 +1069,7 @@ class _ChatBubbleState extends State<ChatBubble> {
                                 Navigator.pop(context);
                                 await Clipboard.setData(
                                     ClipboardData(text: buildStringFromTextItems(message.texts!)));
-                                if(mounted) return;
+                                if(!mounted) return;
                                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                                     content: Text(
                                         "'${buildStringFromTextItems(message.texts!)}' copied!")));
@@ -1417,7 +1419,7 @@ class _ChatBubbleState extends State<ChatBubble> {
                                                                     vertical:
                                                                         1.5),
                                                                 child: getMessageWidget(
-                                                                    message, conversation.participants!, widget.currentEmployee.employeeId!),
+                                                                    message, conversation.participants!, widget.currentEmployee!),
                                                                 // Text(
                                                                 //   message.text
                                                                 //       .toString(),

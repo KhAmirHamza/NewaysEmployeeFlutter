@@ -29,8 +29,9 @@ class ResignAPIService {
   static getAllData() async {
     try {
       var response = await httpAuthGet(path: '/employee_resign_list');
+      print(response.body);
       if (response.statusCode == 200) {
-        print(response.body);
+
         return employeeResignResponseFromJson(response.body);
       }
     } on DioError catch (e) {
@@ -46,9 +47,9 @@ class ResignAPIService {
   static update({required id, required status}) async {
     try {
       var response = await httpAuthPost(
-          path: '/employee_resign_request_dep_head_update',
+          path: '/employee_resign_request_dhead_and_boss_update',
           data: {"resign_req_id": id.toString(), "approve_resign": status});
-      print(response.body);
+      //print(response.body);
       if (response.statusCode == 200) {
         return jsonDecode(response.body)['message'];
       } else if (response.statusCode == 401) {

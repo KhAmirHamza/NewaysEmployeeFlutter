@@ -36,8 +36,11 @@ getStatus({aproval, hAproval}) {
   } else if (aproval == 3) {
     status = "Boss Rejected";
     color = Colors.red;
+  } else if (aproval == 6) {
+    status = "Accounts Pending";
+    color = Colors.green;
   } else if (aproval == 4) {
-    status = "Approved";
+    status = "Accounts Approved";
     color = Colors.green;
   } else {
     status = "Rejected";

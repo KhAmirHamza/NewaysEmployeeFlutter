@@ -51,7 +51,7 @@ class PurchaseMoneyRequestScreen extends StatelessWidget {
                                     horizontal: 8, vertical: 8),
                                 border: const OutlineInputBorder(
                                     borderSide: BorderSide.none),
-                                hintText: "Enter Project Name ",
+                                hintText: "Enter Project Name (Max 30 Characters)",
                                 hintStyle: TextStyle(
                                   color: Colors.grey.shade600,
                                   fontSize: 14,
@@ -88,7 +88,7 @@ class PurchaseMoneyRequestScreen extends StatelessWidget {
                               ),
                             ),
                           ),
-                          const HeightSpace(),
+                         /* const HeightSpace(),
                           Text(
                             "Purpose",
                             style: TextStyle(color: Colors.grey.shade700),
@@ -116,7 +116,7 @@ class PurchaseMoneyRequestScreen extends StatelessWidget {
                                 ),
                               ),
                             ),
-                          ),
+                          ),*/
                           HeightSpace(height: DPadding.full),
                           ListView.builder(
                             physics: const NeverScrollableScrollPhysics(),

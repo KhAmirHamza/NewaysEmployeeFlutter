@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
+import 'package:neways3/src/utils/constants.dart';
 import '../models/EmergencyWorkResponse.dart';
 import '../services/emergency_work_api_services.dart';
 
@@ -20,6 +21,15 @@ class EmergencyWorkApproveController extends GetxController {
   getAllData() async {
     EasyLoading.show();
     isLoadding = true;
+
+    isBoss?
+    //true?
+        await EmergencyWorkAPIServices.getBossPendingData().then((data){
+          if(data is List<EmergencyWorkResponse>){
+            responses = data;
+          }
+        })
+        :
     await EmergencyWorkAPIServices.getPendingData().then((data) {
       print(data.runtimeType);
       if (data is List<EmergencyWorkResponse>) {

@@ -12,7 +12,7 @@ class LoginService {
       if (response.statusCode == 200) {
         return LoginResponseModel.fromJson(jsonDecode(response.body));
       } else {
-        return {"error": "Unauthorized user"};
+        return {"error": "Unauthorized user: ${response.body.toString()}"};
       }
     } on DioError catch (e) {
       if (e.response?.statusCode == 401) {

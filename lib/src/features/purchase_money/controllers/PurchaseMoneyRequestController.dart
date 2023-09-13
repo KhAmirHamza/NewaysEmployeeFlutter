@@ -92,13 +92,25 @@ class PurchaseMoneyRequestController extends GetxController {
           snackPosition: SnackPosition.BOTTOM,
           margin: EdgeInsets.all(DPadding.full));
       return false;
+    } else if (projectController.text.length>30) {
+      Get.snackbar('Wrong', "Project Name must be within 30 Characters",
+          snackPosition: SnackPosition.BOTTOM,
+          margin: EdgeInsets.all(DPadding.full));
+      return false;
     } else if (amountController.text.isEmpty) {
       Get.snackbar('Wrong', "Amount must be required",
           snackPosition: SnackPosition.BOTTOM,
           margin: EdgeInsets.all(DPadding.full));
       return false;
-    } else if (purposeController.text.isEmpty) {
-      Get.snackbar('Wrong', "Money purpose must be required",
+    }
+    // else if (purposeController.text.isEmpty) {
+    //   Get.snackbar('Wrong', "Money purpose must be required",
+    //       snackPosition: SnackPosition.BOTTOM,
+    //       margin: EdgeInsets.all(DPadding.full));
+    //   return false;
+    // }
+    else if (purchaseItems.isEmpty) {
+      Get.snackbar('Wrong', "At least one item must be required",
           snackPosition: SnackPosition.BOTTOM,
           margin: EdgeInsets.all(DPadding.full));
       return false;
@@ -108,7 +120,7 @@ class PurchaseMoneyRequestController extends GetxController {
     await PurchaseMoneyAPIServices.submit(
       data: {
         "amount": amountController.text,
-        "note": purposeController.text,
+        "note": "", //purposeController.text
         "projectName": projectController.text,
         "employee": employeeController.text.split(" - ")[0],
         "products": jsonEncode(purchaseItems)

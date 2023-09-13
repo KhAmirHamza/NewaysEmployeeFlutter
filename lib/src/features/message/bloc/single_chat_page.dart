@@ -1,7 +1,5 @@
-import 'dart:convert';
 import 'package:async_button_builder/async_button_builder.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -14,22 +12,16 @@ import 'package:neways3/src/features/main/MainPage.dart';
 import 'package:neways3/src/features/message/ChatScreen.dart';
 import 'package:neways3/src/features/message/controllers/CustomTextEditingController.dart';
 import 'package:neways3/src/features/message/functions.dart';
-import 'package:neways3/src/utils/constants.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
-
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:get/get.dart' hide Response, FormData, MultipartFile;
 import '../controllers/ConvsCntlr.dart';
 import '../models/Conversation.dart';
-import '../models/Mentionable.dart';
 import '../models/Message.dart';
 import '../models/MessageTextItem.dart';
 import '../utils/Constant.dart';
 import '../widgets/mentionable_text_field_widget.dart';
 import '../widgets/typing_indicator.dart';
-
-
-
 
 bool isChatting = false;
 Message? replyMessage;
@@ -89,9 +81,7 @@ class _SingleChatPageState extends State<SingleChatPage> {
   void dispose() {
     // TODO: implement dispose
     myFocusNode.dispose();
-
     String typingEvent = "typing"; //sending event name...
-
     if (typingUsersId.contains(widget.currentEmployee.employeeId)) {
       typingUsersId.remove(widget.currentEmployee.employeeId);
       var json = {
@@ -99,10 +89,8 @@ class _SingleChatPageState extends State<SingleChatPage> {
         "convsType": widget.convsController.conversations.firstWhere((element) => element.id==widget.convsId).type,
         "typingUsersId": typingUsersId
       };
-
       widget.socket.emit(typingEvent, json);
     }
-
     isChatting = false;
     super.dispose();
   }
@@ -144,12 +132,10 @@ class _SingleChatPageState extends State<SingleChatPage> {
         widget.convsController.conversations.refresh();
       }
 
-      String typingEvent =
-          "typing?convsId=${widget.convsId}"; //typing event name...
+      String typingEvent = "typing?convsId=${widget.convsId}"; //typing event name...
       widget.socket.on(typingEvent, (data) {
         var jsonMap = data as Map<String, dynamic>;
         var result = jsonMap['typingUsersId'].toList();
-
         List<String> ids = <String>[];
         for (int i = 0; i < result.length; i++) {
           ids.add(result[i]);
@@ -158,8 +144,7 @@ class _SingleChatPageState extends State<SingleChatPage> {
         setState(() {});
       });
 
-      String notifyMessageReceivedEvent =
-          "notifyMessageReceived?convsType=Single";
+      String notifyMessageReceivedEvent = "notifyMessageReceived?convsType=Single";
       widget.socket.on(notifyMessageReceivedEvent, (data) {
         widget.convsController.onMessageReceived(widget.socket, data);
       });
@@ -168,8 +153,6 @@ class _SingleChatPageState extends State<SingleChatPage> {
       widget.socket.on(notifyMessageSeenEvent, (data) {
         widget.convsController.onMessageSeen(widget.socket, data);
       });
-
-
     });
 
     return WillPopScope(
@@ -1315,7 +1298,7 @@ class _ChatBubbleState extends State<ChatBubble> {
                                                       .toString())
                                                   : getMessageWidget(
                                                   message,
-                                                  conversation.participants!, widget.currentEmployee.employeeId!),
+                                                  conversation.participants!,widget.currentEmployee),
                                               // Text(
                                               //         message.text.toString(),
                                               //         style: Theme.of(context)
@@ -1538,6 +1521,8 @@ sendMessage(
 
   List<EmployeeResponseModel> recipients = convsController.conversations.firstWhere((element) => element.id==convsId).participants!;
   recipients.removeWhere(
+
+
       (element) => element.employeeId == currentEmployee.employeeId);
 
 
@@ -1552,6 +1537,7 @@ sendMessage(
       reacts: reacts,
       replyOf: replyData,
       recall: 0);
+
 
 
   await convsController.sendMessage( convsId,

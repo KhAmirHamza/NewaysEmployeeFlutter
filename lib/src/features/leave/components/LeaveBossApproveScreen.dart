@@ -18,7 +18,8 @@ class LeaveBossApproveScreen extends StatelessWidget {
       appBar: AppBar(
         leading: InkWell(
             onTap: () => Get.back(),
-            child: const Icon(Icons.arrow_back_ios_new_rounded)),
+            child: const Icon(Icons.arrow_back_ios_new_rounded)
+        ),
         title: const Text("Leave Approve"),
         centerTitle: true,
         elevation: 0,
@@ -27,7 +28,8 @@ class LeaveBossApproveScreen extends StatelessWidget {
               onPressed: () async {
                 await Get.put(LeaveBossApproveController()).getAllData();
               },
-              icon: const Icon(Icons.replay_outlined)),
+              icon: const Icon(Icons.replay_outlined)
+          ),
         ],
       ),
       body: body(),
@@ -80,7 +82,7 @@ class LeaveBossApproveScreen extends StatelessWidget {
                                                 title:
                                                     "Are you sure approve this request?",
                                                 okPress: () async {
-                                                  await controller.action(
+                                                  await controller.updateLeaveRequestBossUpdate(
                                                       1, leave);
                                                   Get.back();
                                                 },
@@ -131,7 +133,7 @@ class LeaveBossApproveScreen extends StatelessWidget {
                                                 title:
                                                     "Are you sure reject this request?",
                                                 okPress: () async {
-                                                  await controller.action(
+                                                  await controller.updateLeaveRequestBossUpdate(
                                                       2, leave);
                                                   Get.back();
                                                 },

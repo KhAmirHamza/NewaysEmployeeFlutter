@@ -73,7 +73,7 @@ class _MainPageState extends State<MainPage> {
 
     final box = GetStorage();
 
-    print("boxEmployeeId: ${box.read("employeeId")}");
+   // print("boxEmployeeId: ${box.read("employeeId")}");
     EmployeeResponseModel currentEmployee = EmployeeResponseModel(
       employeeId: box.read("employeeId"),
       roleName: box.read("roleName"),

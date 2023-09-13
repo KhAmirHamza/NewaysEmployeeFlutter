@@ -11,7 +11,7 @@ class AdvanceSalaryAPIServices {
   static getAllData() async {
     try {
       var response = await httpAuthGet(path: '/advance_salary');
-      print(response.body);
+     // print(response.body);
       if (response.statusCode == 200) {
         return advanceSalaryResponseFromJson(response.body);
       }
@@ -28,7 +28,7 @@ class AdvanceSalaryAPIServices {
   static submit({required data}) async {
     try {
       var response = await httpAuthPost(path: '/advance_salary', data: data);
-      print(response.body);
+    //  print(response.body);
       if (response.statusCode == 200) {
         return jsonDecode(response.body)['message'];
       }
@@ -45,7 +45,7 @@ class AdvanceSalaryAPIServices {
   static getPendingData() async {
     try {
       var response = await httpAuthGet(path: '/employee_advance_salary');
-      print(response.body);
+     // print(response.body);
       if (response.statusCode == 200) {
         return advanceSalaryResponseFromJson(response.body);
       }
@@ -63,7 +63,7 @@ class AdvanceSalaryAPIServices {
     try {
       var response = await httpAuthPost(
           path: '/advance_salary_dep_head_approve', data: data);
-      print(response.body);
+     // print(response.body);
       if (response.statusCode == 200) {
         return jsonDecode(response.body)['message'];
       }
@@ -81,7 +81,7 @@ class AdvanceSalaryAPIServices {
     try {
       var response = await httpAuthPost(
           path: '/advance_salary_dep_head_reject', data: data);
-      print(response.body);
+     // print(response.body);
       if (response.statusCode == 200) {
         return jsonDecode(response.body)['message'];
       }
@@ -92,6 +92,33 @@ class AdvanceSalaryAPIServices {
       print(e.response?.statusCode);
     }
 
+    return null;
+  }
+
+
+  static dHeadAndBossApproval({required String action, required List<int> ids, required String note}) async {
+    try {
+      //print("request data");
+      //print(ids.toString());
+      //print(action.toString());
+      //print(note.toString());
+      //return;
+      var response = await httpAuthPost(path: '/advance_salary_dhead_and_boss_approval/$action', data: {'ids': jsonEncode(ids), 'note': note});
+      //print("response.body");
+     // print(response.body);
+      if (response.statusCode == 200) {
+        //print("response");
+        //print(response.body);
+        return jsonDecode(response.body)['message'];
+      } else if (response.statusCode == 401) {
+        return jsonDecode(response.body)['error'];
+      }
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 401) {
+        return {"error": "Server Error"};
+      }
+      print(e.response?.statusCode);
+    }
     return null;
   }
 }

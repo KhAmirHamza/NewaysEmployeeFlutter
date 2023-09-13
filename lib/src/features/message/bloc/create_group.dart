@@ -1,41 +1,35 @@
 import 'dart:math';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_state_manager/src/rx_flutter/rx_getx_widget.dart';
 import 'package:neways3/src/features/contacts/controllers/ContactController.dart';
 import 'package:neways3/src/features/contacts/models/employee_response_model.dart';
 import 'package:neways3/src/features/main/MainPage.dart';
-import 'package:neways3/src/features/message/ChatScreen.dart';
 import 'package:neways3/src/features/message/controllers/SocketController.dart';
 import 'package:neways3/src/utils/constants.dart';
+import 'package:neways3/src/utils/functions.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
-
 import '../controllers/ConvsCntlr.dart';
 import '../models/Message.dart';
 
 List<EmployeeResponseModel> groupEmployees = <EmployeeResponseModel>[];
 
 class CreateGroupWidget extends StatefulWidget {
-  ContactController contactController;
-  ConversationController convsController;
-  EmployeeResponseModel currentEmployee;
-  IO.Socket socket;
+  final ContactController contactController;
+  final ConversationController convsController;
+  final EmployeeResponseModel currentEmployee;
+  final IO.Socket socket;
 
-  CreateGroupWidget(this.contactController, this.convsController,
+  const CreateGroupWidget(this.contactController, this.convsController,
       this.currentEmployee, this.socket,
       {Key? key})
       : super(key: key);
-
 
   @override
   State<CreateGroupWidget> createState() => _CreateGroupWidgetState();
 }
 
 class _CreateGroupWidgetState extends State<CreateGroupWidget> {
-
-
 
   @override
   void initState() {
@@ -44,8 +38,6 @@ class _CreateGroupWidgetState extends State<CreateGroupWidget> {
     groupEmployees.clear();
     groupEmployees.add(widget.currentEmployee);
   }
-
-
 
   refreshFullPage() {
     setState(() {});
@@ -61,7 +53,6 @@ class _CreateGroupWidgetState extends State<CreateGroupWidget> {
     return WillPopScope(
       onWillPop: () async {
         groupEmployees.clear();
-        //socket.clearListeners();
         Navigator.push(context,
             MaterialPageRoute(builder: (context) => MainPage(socket!, 0)));
         return true;
@@ -110,15 +101,13 @@ class _CreateGroupWidgetState extends State<CreateGroupWidget> {
 }
 
 class GroupWidget extends StatefulWidget {
-  ContactController contactController;
-  Function() refreshFullPage;
-  ConversationController convsController;
-  EmployeeResponseModel currentEmployee;
+  final ContactController contactController;
+  final Function() refreshFullPage;
+  final ConversationController convsController;
+  final EmployeeResponseModel currentEmployee;
+  final IO.Socket socket;
 
-  //List<User> users = <User>[];
-  IO.Socket socket;
-
-  GroupWidget(this.contactController, this.convsController,
+  const GroupWidget(this.contactController, this.convsController,
       this.currentEmployee, this.socket, this.refreshFullPage,
       {Key? key})
       : super(key: key);
@@ -145,11 +134,11 @@ class _GroupWidgetState extends State<GroupWidget>
     var _borderRadius = BorderRadius.circular(random.nextInt(100).toDouble());
 
     return Container(
-      margin: EdgeInsets.fromLTRB(10, 7, 10, 10),
+      margin: const EdgeInsets.fromLTRB(10, 7, 10, 10),
       child: Column(
         children: [
           MaterialButton(
-              padding: EdgeInsets.only(left: 5),
+              padding: const EdgeInsets.only(left: 5),
               height: 50,
               onPressed: () {},
               child: Row(
@@ -163,7 +152,7 @@ class _GroupWidgetState extends State<GroupWidget>
                     ),
                   ),
                   Container(
-                    margin: EdgeInsets.only(left: 15),
+                    margin: const EdgeInsets.only(left: 15),
                     child: const Text(
                       "Friends",
                       style: TextStyle(fontSize: 17, color: Colors.black),
@@ -172,7 +161,7 @@ class _GroupWidgetState extends State<GroupWidget>
                 ],
               )),
           MaterialButton(
-              padding: EdgeInsets.only(left: 5),
+              padding: const EdgeInsets.only(left: 5),
               height: 50,
               onPressed: () {},
               child: Row(
@@ -196,7 +185,7 @@ class _GroupWidgetState extends State<GroupWidget>
                 ],
               )),
           MaterialButton(
-              padding: EdgeInsets.only(left: 5),
+              padding: const EdgeInsets.only(left: 5),
               height: 50,
               onPressed: () {},
               child: Row(
@@ -210,7 +199,7 @@ class _GroupWidgetState extends State<GroupWidget>
                     ),
                   ),
                   Container(
-                    margin: EdgeInsets.only(left: 15),
+                    margin: const EdgeInsets.only(left: 15),
                     child: const Text(
                       "Select aGroup",
                       style: TextStyle(fontSize: 17, color: Colors.black),
@@ -234,10 +223,10 @@ class _GroupWidgetState extends State<GroupWidget>
                         widget.refreshFullPage);
                   })),
           Card(
-              margin: EdgeInsets.all(5),
+              margin: const EdgeInsets.all(5),
               elevation: 2,
               shape: RoundedRectangleBorder(
-                side: BorderSide(color: Colors.white70, width: 1),
+                side: const BorderSide(color: Colors.white70, width: 1),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Row(
@@ -255,7 +244,7 @@ class _GroupWidgetState extends State<GroupWidget>
                       //margin: EdgeInsets.fromLTRB(5,5,5,5),
                       height: groupEmployees.isEmpty ? 0 : 80,
                       curve: Curves.fastOutSlowIn,
-                      padding: EdgeInsets.fromLTRB(5, 0, 5, 5),
+                      padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -264,7 +253,7 @@ class _GroupWidgetState extends State<GroupWidget>
                             flex: 2,
                             child: Container(
                               alignment: Alignment.topLeft,
-                              margin: EdgeInsets.fromLTRB(5, 5, 5, 0),
+                              margin: const EdgeInsets.fromLTRB(5, 5, 5, 0),
                               child: Text(
                                 "Selected Employees: ( ${groupEmployees.length} )",
                                 style: const TextStyle(fontSize: 14, color: Colors.grey),
@@ -317,7 +306,7 @@ class _GroupWidgetState extends State<GroupWidget>
                               widget.socket);
                         },
                         child:
-                            Text("Next", style: TextStyle(color: Colors.white)),
+                            const Text("Next", style: TextStyle(color: Colors.white)),
                       ),
                     ),
                   )
@@ -330,9 +319,9 @@ class _GroupWidgetState extends State<GroupWidget>
 }
 
 class SelectedEmployeeWidget extends StatelessWidget {
-  AnimationController animationController;
-  int index;
-  SelectedEmployeeWidget(this.animationController, this.index, {Key? key})
+  final AnimationController animationController;
+  final int index;
+  const SelectedEmployeeWidget(this.animationController, this.index, {Key? key})
       : super(key: key);
 
   @override
@@ -362,7 +351,7 @@ class SelectedEmployeeWidget extends StatelessWidget {
                 flex: 2,
                 child: CircleAvatar(
                   radius: 20,
-                  backgroundImage: NetworkImage(groupEmployees[index]!.photo!),
+                  backgroundImage: NetworkImage(groupEmployees[index].photo!),
                   backgroundColor: Colors.transparent,
                 ),
               ),
@@ -380,10 +369,10 @@ class SelectedEmployeeWidget extends StatelessWidget {
 }
 
 class EmployeeItem extends StatefulWidget {
-  ContactController contactController;
-  Function() refreshFullPage;
-  int index;
-  EmployeeItem(this.contactController, this.index, this.refreshFullPage,
+  final ContactController contactController;
+  final Function() refreshFullPage;
+  final int index;
+  const EmployeeItem(this.contactController, this.index, this.refreshFullPage,
       {Key? key})
       : super(key: key);
 
@@ -395,11 +384,11 @@ class _EmployeeItemState extends State<EmployeeItem> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 5),
+      margin: const EdgeInsets.symmetric(vertical: 5),
       child: Card(
         clipBehavior: Clip.antiAlias,
         elevation: 0,
-        margin: EdgeInsets.fromLTRB(5, 0, 5, 2),
+        margin: const EdgeInsets.fromLTRB(5, 0, 5, 2),
         child: InkWell(
             splashColor: Colors.blue.withAlpha(30),
             onTap: () {
@@ -414,7 +403,7 @@ class _EmployeeItemState extends State<EmployeeItem> {
                 groupEmployees
                     .add(widget.contactController.employees[widget.index]);
                 //print("Now Added");
-                widget.contactController.refresh();
+                widget.contactController.update();
                 // widget.refreshFullPage();
               } else {
                 bool found = false;
@@ -424,8 +413,7 @@ class _EmployeeItemState extends State<EmployeeItem> {
                           .employeeId) {
                     found = true;
                     groupEmployees.removeAt(i);
-                   // print("Now Removed");
-                    widget.contactController.refresh();
+                    widget.contactController.update();
                     // widget.refreshFullPage();
                     return;
                   }
@@ -433,9 +421,7 @@ class _EmployeeItemState extends State<EmployeeItem> {
                 if (!found) {
                   groupEmployees
                       .add(widget.contactController.employees[widget.index]);
-                  //print("Now Added");
-                  widget.contactController.refresh();
-                  //widget.refreshFullPage();
+                  widget.contactController.update();
                 }
               }
             },
@@ -443,13 +429,13 @@ class _EmployeeItemState extends State<EmployeeItem> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Container(
-                  margin: EdgeInsets.fromLTRB(20, 0, 15, 0),
+                  margin: const EdgeInsets.fromLTRB(20, 0, 15, 0),
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.grey),
                     borderRadius: BorderRadius.circular(25),
                   ),
                   child: Container(
-                    padding: EdgeInsets.all(3),
+                    padding: const EdgeInsets.all(3),
                     child: CircleAvatar(
                       radius: 9,
                       backgroundColor: Colors.white,
@@ -459,10 +445,6 @@ class _EmployeeItemState extends State<EmployeeItem> {
                                   .employeeId)
                           ? const AssetImage('assets/images/check_mark.png')
                           : null,
-                      // backgroundImage: groupEmployees.contains(
-                      //         widget.contactController.employees[widget.index])
-                      //     ? AssetImage('assets/images/check_mark.png')
-                      //     : null,
                     ),
                   ),
                 ),
@@ -484,7 +466,7 @@ class _EmployeeItemState extends State<EmployeeItem> {
                       fit: BoxFit.fill),
                 ),
                 Container(
-                    margin: EdgeInsets.only(left: 15),
+                    margin: const EdgeInsets.only(left: 15),
                     child: Text(widget
                         .contactController.employees[widget.index].fullName
                         .toString()))
@@ -501,8 +483,6 @@ void showCustomDialog(
     ContactController contactController,
     EmployeeResponseModel currentEmployee,
     IO.Socket socket) {
-  //print("Next Clicked: " + groupEmployees.length.toString());
-
   TextEditingController groupNameController = TextEditingController();
 
   showGeneralDialog(
@@ -510,13 +490,13 @@ void showCustomDialog(
     barrierLabel: "Barrier",
     barrierDismissible: true,
     barrierColor: Colors.black.withOpacity(0.5),
-    transitionDuration: Duration(milliseconds: 500),
+    transitionDuration: const Duration(milliseconds: 500),
     pageBuilder: (_, __, ___) {
       return Center(
         child: Container(
           height: 300,
-          margin: EdgeInsets.symmetric(horizontal: 20),
-          padding: EdgeInsets.symmetric(horizontal: 20),
+          margin: const EdgeInsets.symmetric(horizontal: 20),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           decoration: BoxDecoration(
               color: Colors.white, borderRadius: BorderRadius.circular(20)),
           child: Column(
@@ -524,7 +504,7 @@ void showCustomDialog(
               Flexible(
                 flex: 1,
                 child: Container(
-                  margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
+                  margin: const EdgeInsets.fromLTRB(0, 20, 0, 0),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(25.0),
@@ -536,7 +516,7 @@ void showCustomDialog(
                     ],
                   ),
                   child: Container(
-                    margin: EdgeInsets.fromLTRB(20, 0, 20, 0),
+                    margin: const EdgeInsets.fromLTRB(20, 0, 20, 0),
                     child: Material(
                       child: TextField(
                         controller: groupNameController,
@@ -555,7 +535,7 @@ void showCustomDialog(
               ),
               Container(
                 alignment: Alignment.topLeft,
-                margin: EdgeInsets.fromLTRB(5, 35, 5, 5),
+                margin: const EdgeInsets.fromLTRB(5, 35, 5, 5),
                 child: const Text(
                   "Selected Employees",
                   style: TextStyle(fontSize: 14, color: Colors.grey),
@@ -574,7 +554,7 @@ void showCustomDialog(
                           ),
                           child: Container(
                             width: 60,
-                            margin: EdgeInsets.fromLTRB(5, 5, 5, 5),
+                            margin: const EdgeInsets.fromLTRB(5, 5, 5, 5),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -583,10 +563,10 @@ void showCustomDialog(
                                   backgroundImage: NetworkImage(groupEmployees[index].photo!),
                                   backgroundColor: Colors.transparent,
                                 ),
-                                HeightSpace(),
+                                const HeightSpace(),
                                 Text(
                                   groupEmployees[index].fullName.toString(),
-                                  style: TextStyle(fontSize: 10, overflow: TextOverflow.ellipsis),
+                                  style: const TextStyle(fontSize: 10, overflow: TextOverflow.ellipsis),
 
                                 )
                               ],
@@ -597,7 +577,7 @@ void showCustomDialog(
               Expanded(
                 child: Container(
                   alignment: Alignment.bottomRight,
-                  margin: EdgeInsets.all(5),
+                  margin: const EdgeInsets.all(5),
                   child: MaterialButton(
                     color: Colors.blue,
                     shape: RoundedRectangleBorder(
@@ -606,7 +586,11 @@ void showCustomDialog(
                     elevation: 8,
                     onPressed: () {
                       //todo... goto next page
-                      print("Submit Clicked!");
+
+                      if(groupNameController.text.isEmpty){
+                        showInSnackBar(context, "Enter Group Name...");
+                        return;
+                      }
                       List<String> seenBy = <String>[];
                       seenBy.add(currentEmployee.employeeId.toString());
 
@@ -658,7 +642,7 @@ void showCustomDialog(
                                   MainPage(socket, 0)));
                     },
                     child:
-                        Text("Submit", style: TextStyle(color: Colors.white)),
+                        const Text("Submit", style: TextStyle(color: Colors.white)),
                   ),
                 ),
               )
@@ -670,9 +654,9 @@ void showCustomDialog(
     transitionBuilder: (_, anim, __, child) {
       Tween<Offset> tween;
       if (anim.status == AnimationStatus.reverse) {
-        tween = Tween(begin: Offset(-1, 0), end: Offset.zero);
+        tween = Tween(begin: const Offset(-1, 0), end: Offset.zero);
       } else {
-        tween = Tween(begin: Offset(1, 0), end: Offset.zero);
+        tween = Tween(begin: const Offset(1, 0), end: Offset.zero);
       }
 
       return SlideTransition(
@@ -728,7 +712,7 @@ class CustomSearchDelegate extends SearchDelegate {
         onPressed: () {
           query = '';
         },
-        icon: Icon(Icons.clear),
+        icon: const Icon(Icons.clear),
       ),
     ];
   }
@@ -740,7 +724,7 @@ class CustomSearchDelegate extends SearchDelegate {
       onPressed: () {
         close(context, null);
       },
-      icon: Icon(Icons.arrow_back),
+      icon: const Icon(Icons.arrow_back),
     );
   }
 

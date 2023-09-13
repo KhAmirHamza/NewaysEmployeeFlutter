@@ -41,6 +41,21 @@ class EmergencyWorkAPIServices {
 
     return null;
   }
+  static getBossPendingData() async {
+    try {
+      var response = await httpAuthGet(path: '/employee_emergency_work_permit_boss_pending');
+      print(response.body);
+      if (response.statusCode == 200) {
+        return emergencyWorkResponseFromJson(response.body);
+      }
+    } on DioError catch (e) {
+      if (e.response?.statusCode == 401) {
+        return {"error": "Server Error"};
+      }
+      print(e.response?.statusCode);
+    }
+    return null;
+  }
 
   static depHeadPermit({required data}) async {
     try {

@@ -59,6 +59,8 @@ class BodyScreen extends StatelessWidget {
                                   ],
                                 ),
                               ),
+                             // if(getStatus(state: response.status,aproval: response.approval) == "APP")
+                              if(response.approval == 0 && response.status == 0)
                               IconButton(
                                 color: Colors.red,
                                 onPressed: () => defaultDialog(

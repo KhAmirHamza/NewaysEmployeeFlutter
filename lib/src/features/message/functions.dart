@@ -32,20 +32,27 @@ matchText(List<String> mentionableStrings, String text, bool continuity){
   return result;
 }
 
-bool showSeenBadge(List<EmployeeResponseModel> participants, Message message, String employeeName){
-//  print("Mentioned employee name s1: $employeeName");
-  if(employeeName.length>1){
-  //  print("Mentioned employee id s2");
-    int participantIndex= participants.indexWhere((element) => element.fullName==employeeName.substring(1));
-  //  print("Mentioned employee id s2: $participantIndex");
+bool showSeenBadge(List<EmployeeResponseModel> participants,EmployeeResponseModel currentEmployee, Message message, String mentionedEmployeeName){
 
-    if(participantIndex>-1){
-     // print("showSeenBadge: ${message.seenBy!.contains(participants[participantIndex].employeeId)}");
+  print("message: ${message.toJson().toString()}");
+
+  print("Mentioned employee: //${currentEmployee.toJson().toString()}//");
+
+  print("Mentioned employee name s2: //$mentionedEmployeeName//");
+
+  if(mentionedEmployeeName.length>1){
+    //print("Mentioned employee id s2");
+    int participantIndex= participants.indexWhere((element) => element.fullName==mentionedEmployeeName);
+    //print("Mentioned employee id s2: $participantIndex");
+
+    if(currentEmployee.fullName!.trim() == mentionedEmployeeName){
+     //print("showSeenBadge: ${message.seenBy!.contains(participants[participantIndex].employeeId)}");
+      return true;
+    }else if(participantIndex > -1){
       return message.seenBy!.contains(participants[participantIndex].employeeId);
     }else{
       return false;
     }
-
   }else{
     return false;
   }
@@ -156,26 +163,28 @@ bool showSeenBadge(List<EmployeeResponseModel> participants, Message message, St
 // }
 
 
-getMessageWidget(Message message, List<EmployeeResponseModel> participants, String currentEmployeeId){
+getMessageWidget(Message message, List<EmployeeResponseModel> participants, EmployeeResponseModel currentEmployee){
   List<TextSpan> messageTextSpans = [];
   List<String> constMentionableStrings = generateMentionsIncludingConst()[0];
+
+
   if(message.texts!=null){
     for(int i=0; i<message.texts!.length; i++){
       if(message.texts![i].type=="mention"){
 
         //print("Message Text Type: ${message.texts![i].type}");
+        String messageValue = message.texts![i].value!.trim();
         messageTextSpans.add(
             TextSpan(
                 children: [
-                  TextSpan(text: message.texts![i].value!.trim(), style: TextStyle( fontWeight: FontWeight.bold, color: Colors.blue.shade800, ),),
-                  if(!constMentionableStrings.contains(message.texts![i].value!.trim()))
+                  TextSpan(text: messageValue.trim(), style: TextStyle( fontWeight: FontWeight.bold, color: Colors.blue.shade800, ),),
+                  if(!constMentionableStrings.contains(messageValue))
                     WidgetSpan(child: Transform.translate(offset:  const Offset(0, -5), child: Icon(
-                        showSeenBadge(participants, message, message.texts![i].value!) ||
-                            message.texts![i].value == currentEmployeeId?
+                        showSeenBadge(participants, currentEmployee, message, messageValue.substring(1)) ||
+                            messageValue == currentEmployee.employeeId?
                         Icons.check_circle_rounded : Icons.radio_button_unchecked_outlined
                         , color:
-                    showSeenBadge(participants, message, message.texts![i].value!) ||
-                        message.texts![i].value== currentEmployeeId?
+                    showSeenBadge(participants,currentEmployee, message, messageValue.substring(1)) || messageValue== currentEmployee.employeeId?
                     Colors.green.shade600:
                     Colors.red.shade600
                         , size: 11),))

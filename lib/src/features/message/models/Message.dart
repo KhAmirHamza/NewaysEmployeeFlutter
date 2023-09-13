@@ -33,8 +33,6 @@ class Message {
     //text =unescape.convert(json['text']);
     if (json['texts'] != null) {
       texts = <MessageTextItem>[];
-      print("json['texts']");
-      print(json['texts']);
       json['texts'].forEach((v) {
         texts!.add(MessageTextItem.fromJson(v));
       });

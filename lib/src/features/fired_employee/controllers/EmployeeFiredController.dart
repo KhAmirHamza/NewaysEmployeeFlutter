@@ -15,15 +15,18 @@ class EmployeeFiredController extends GetxController {
   TextEditingController employeeController = TextEditingController();
   DateTime lastWorkingDate = DateTime.now();
   late List<EmployeeFiredResponse> responses = [];
+  late List<EmployeeFiredResponse> responsesPending = [];
   List<SelectedListItem> employees = [];
   late bool isLoadding = false;
   late bool isDataEmpty = false;
+  late bool isPendingDataEmpty = false;
   String? message;
 
   @override
   void onInit() {
     super.onInit();
     getAllData();
+    getEmployeeFiredBossPendingList();
   }
 
   getAllData() async {
@@ -37,7 +40,20 @@ class EmployeeFiredController extends GetxController {
     });
     EasyLoading.dismiss();
     isLoadding = false;
+    update();
+  }
 
+  getEmployeeFiredBossPendingList() async {
+    EasyLoading.show();
+    isLoadding = true;
+    await EmployeeFiredAPIServices.getEmployeeFiredBossPendingList().then((data) {
+      if (data.runtimeType == List<EmployeeFiredResponse>) {
+        responsesPending = data;
+        isPendingDataEmpty = data.isEmpty;
+      }
+    });
+    EasyLoading.dismiss();
+    isLoadding = false;
     update();
   }
 
@@ -105,5 +121,19 @@ class EmployeeFiredController extends GetxController {
   clear() {
     lastWorkingDate = DateTime.now();
     firedReasonController.clear();
+  }
+
+
+
+  action(String status, EmployeeFiredResponse response) async {
+    EasyLoading.show();
+    await EmployeeFiredAPIServices.update(id: response.id, status: status).then((msg) {
+      Get.snackbar('Message', msg,
+          snackPosition: SnackPosition.BOTTOM,
+          margin: EdgeInsets.all(DPadding.full));
+    });
+    EasyLoading.dismiss();
+    await getAllData();
+    update();
   }
 }

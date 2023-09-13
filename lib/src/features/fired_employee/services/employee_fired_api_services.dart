@@ -24,6 +24,22 @@ class EmployeeFiredAPIServices {
 
     return null;
   }
+  static getEmployeeFiredBossPendingList() async {
+    try {
+      var response = await httpAuthGet(path: '/employee_fired_boss_pending_list');
+      if (response.statusCode == 200) {
+        print(response.body);
+        return employeeFiredResponseFromJson(response.body);
+      }
+    } on DioError catch (e) {
+      if (e.response?.statusCode == 401) {
+        return {"error": "Server Error"};
+      }
+      print(e.response?.statusCode);
+    }
+
+    return null;
+  }
 
   static getAllEmployee() async {
     try {
@@ -65,6 +81,27 @@ class EmployeeFiredAPIServices {
     try {
       var response =
           await httpAuthGet(path: '/employee_fired_request_delete/$id');
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body)['message'];
+      } else if (response.statusCode == 401) {
+        return jsonDecode(response.body)['error'];
+      }
+    } on DioError catch (e) {
+      if (e.response?.statusCode == 401) {
+        return {"error": "Server Error"};
+      }
+      print(e.response?.statusCode);
+    }
+
+    return null;
+  }
+
+  static update({required id, required status}) async {
+    try {
+      var response = await httpAuthPost(
+          path: '/employee_fired_request_boss_update',
+          data: {"fired_req_id": id.toString(), "approve_fired": status});
+      //print(response.body);
       if (response.statusCode == 200) {
         return jsonDecode(response.body)['message'];
       } else if (response.statusCode == 401) {

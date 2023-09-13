@@ -8,6 +8,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:neways3/src/features/contacts/controllers/ContactController.dart';
 import 'package:neways3/src/features/contacts/models/employee_response_model.dart';
+import 'package:neways3/src/features/message/bloc/group_chat_widget.dart';
 import 'package:neways3/src/features/message/bloc/single_chat_page.dart';
 import 'package:neways3/src/features/message/services/ConversationService.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
@@ -172,10 +173,13 @@ class ConversationController extends GetxController implements SocketListeners {
     );
 
     if (response.statusCode == 200) {
-      socketController.notifyMessageReceived(
-          convsId, convsType, currentEmployee!.employeeId!);
-      SingleChatPage.seenMessage(this, convsId, convsType, messageId, socket,
-          currentEmployee!.employeeId!);
+      socketController.notifyMessageReceived( convsId, convsType, currentEmployee!.employeeId!);
+
+      if(convsType=="Single"){
+        SingleChatPage.seenMessage(this, convsId, convsType, messageId, socket, currentEmployee!.employeeId!);
+      }else{
+        GroupChatWidget.seenMessage(this, convsId, convsType, messageId, socket, currentEmployee!.employeeId!);
+      }
     }
   }
 
@@ -315,7 +319,7 @@ class ConversationController extends GetxController implements SocketListeners {
     // TODO: implement onMessageReceived
 
     var jsonMap = data as Map<String, dynamic>;
-   // print("Other User Has Received Message: " + jsonMap.toString());
+    print("Other User Has Received Message: $jsonMap");
 
     int convsIndex = 0;
     for (int i = 0; i < conversations.length; i++) {
@@ -340,7 +344,7 @@ class ConversationController extends GetxController implements SocketListeners {
   @override
   void onMessageSeen(IO.Socket socket, data) {
     var jsonMap = data as Map<String, dynamic>;
-   // print("Other User Has Seen Message: " + jsonMap.toString());
+   print("Other User Has Seen Message: $jsonMap");
 
     int convsIndex = 0;
     for (int i = 0; i < conversations.length; i++) {
@@ -367,9 +371,7 @@ class ConversationController extends GetxController implements SocketListeners {
     print("onMessageSend called-->data->");
     print(data);
 
-
     var jsonMap = data as Map<String, dynamic>;
-
 
     if ((conversations.isEmpty ||
         !conversations.any((item) => item.id == jsonMap['convsId']))) {
@@ -377,8 +379,7 @@ class ConversationController extends GetxController implements SocketListeners {
       return;
     }
 
-    EmployeeResponseModel employee =
-        EmployeeResponseModel.fromJson(jsonMap['sender']);
+    EmployeeResponseModel employee = EmployeeResponseModel.fromJson(jsonMap['sender']);
 
     if (employee.employeeId != currentEmployee!.employeeId!) {
       var receivedByList = jsonMap['receivedBy'].toList();

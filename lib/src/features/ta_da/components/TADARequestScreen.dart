@@ -29,9 +29,11 @@ class TADARequestScreen extends StatelessWidget {
                   children: [
                     const HeightSpace(),
                     Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Expanded(
                           child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
@@ -70,12 +72,44 @@ class TADARequestScreen extends StatelessWidget {
                                   ),
                                 ),
                               ),
+                              if(controller.fromController.text.toString()=="Other")
+                                const HeightSpace(),
+                              if(controller.fromController.text.toString()=="Other")
+                                Text(
+                                "Other Destination",
+                                style: TextStyle(color: Colors.grey.shade700),
+                              ),
+                              if(controller.fromController.text.toString()=="Other")
+                                const HeightSpace(),
+                              if(controller.fromController.text.toString()=="Other")
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.grey.shade100,
+                                  borderRadius: BorderRadius.circular(DPadding.half / 2),
+                                ),
+                                child: TextField(
+                                  controller: controller.fromOtherController,
+                                  keyboardType: TextInputType.text,
+                                  decoration: InputDecoration(
+                                      contentPadding: const EdgeInsets.symmetric(
+                                          horizontal: 8, vertical: 8),
+                                      border: const OutlineInputBorder(
+                                          borderSide: BorderSide.none),
+                                      hintText: "Enter other destination ",
+                                      hintStyle: TextStyle(
+                                        color: Colors.grey.shade600,
+                                        fontSize: 14,
+                                      ),
+                                    )
+                                ),
+                              )
                             ],
                           ),
                         ),
                         const WidthSpace(),
                         Expanded(
                           child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
@@ -114,6 +148,37 @@ class TADARequestScreen extends StatelessWidget {
                                   ),
                                 ),
                               ),
+                              if(controller.toController.text.toString()=="Other")
+                              const HeightSpace(),
+                              if(controller.toController.text.toString()=="Other")
+                              Text(
+                                "Other Destination",
+                                style: TextStyle(color: Colors.grey.shade700),
+                              ),
+                              if(controller.toController.text.toString()=="Other")
+                              const HeightSpace(),
+                              if(controller.toController.text.toString()=="Other")
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.grey.shade100,
+                                  borderRadius: BorderRadius.circular(DPadding.half / 2),
+                                ),
+                                child: TextField(
+                                    controller: controller.toOtherController,
+                                    keyboardType: TextInputType.text,
+                                    decoration: InputDecoration(
+                                      contentPadding: const EdgeInsets.symmetric(
+                                          horizontal: 8, vertical: 8),
+                                      border: const OutlineInputBorder(
+                                          borderSide: BorderSide.none),
+                                      hintText: "Enter other destination ",
+                                      hintStyle: TextStyle(
+                                        color: Colors.grey.shade600,
+                                        fontSize: 14,
+                                      ),
+                                    )
+                                ),
+                              )
                             ],
                           ),
                         ),

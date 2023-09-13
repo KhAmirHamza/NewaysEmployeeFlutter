@@ -12,6 +12,7 @@ import 'package:month_year_picker/month_year_picker.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:neways3/src/features/main/MainPage.dart';
 import 'package:neways3/src/features/message/ChatScreen.dart';
 import 'package:neways3/src/features/message/controllers/SocketController.dart';
 import 'package:neways3/src/features/splash/SplashScreen.dart';
@@ -21,17 +22,10 @@ import 'package:neways3/src/utils/functions.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:socket_io_client/socket_io_client.dart';
 
-
-final FlutterLocalNotificationsPlugin _notificationsPlugin =
-    FlutterLocalNotificationsPlugin();
-
+final FlutterLocalNotificationsPlugin flutterLocalNotificationPlugin = FlutterLocalNotificationsPlugin();
 final FirebaseMessaging messaging = FirebaseMessaging.instance;
-const AndroidNotificationChannel androidNotificationChannel =
-    AndroidNotificationChannel('neways3', 'Neways3',
-        importance: Importance.high);
-
-const AndroidNotificationDetails  androidPlatformChannelSpecifics =
-    AndroidNotificationDetails('neways3', 'Neways3',
+const AndroidNotificationChannel androidNotificationChannel = AndroidNotificationChannel('neways3', 'Neways3', importance: Importance.high);
+const AndroidNotificationDetails  androidNotificationDetails = AndroidNotificationDetails('neways3', 'Neways3',
         importance: Importance.max,
         priority: Priority.max,
         enableLights: true,
@@ -41,28 +35,24 @@ const AndroidNotificationDetails  androidPlatformChannelSpecifics =
         playSound: true,
         enableVibration: true,
         icon: '@mipmap/ic_launcher');
-
-const NotificationDetails platformChannelSpecifics =
-    NotificationDetails(android: androidPlatformChannelSpecifics);
-
+const NotificationDetails platformChannelSpecifics = NotificationDetails(android: androidNotificationDetails);
 Future<void> _firebaseMessageHandler(RemoteMessage message) async {
-
-
-  // if (message.contentAvailable) {
-  //   _notificationsPlugin.show(
-  //       message.notification.hashCode,
-  //       message.notification!.title,
-  //       '',//jsonDecode(message.notification!.body!)['message'].toString(),
-  //       platformChannelSpecifics);
-  // }
+  routeToGo = "chat";
+  if (message.contentAvailable) {
+    flutterLocalNotificationPlugin.show(
+        message.notification.hashCode,
+        message.notification!.title,
+        message.notification!.body!,//jsonDecode(message.notification!.body!)['message'].toString(),
+        platformChannelSpecifics);
+  }
   // setNotification(message);
   // Initialise  localnotification
-  print("NotificationData: ${message.data.toString()}");
+//  print("NotificationData: ${message.data.toString()}");
 
   if (message.data.isNotEmpty) {
     //LocalNotificationService.display(message);
     String? payload = message.data['message'];
-      _notificationsPlugin.show(
+      flutterLocalNotificationPlugin.show(
           message.notification.hashCode,
           message.data['title'],
           message.data['message'],
@@ -71,11 +61,10 @@ Future<void> _firebaseMessageHandler(RemoteMessage message) async {
  // setNotification(message);
 
 }
-
 void setNotification(RemoteMessage message) async {
-
+  routeToGo = "chat";
   //print(jsonEncode("Notification1: ${message.notification!.toMap().toString()}"));
-  print(jsonEncode("Data1: ${message.data['title'].toString()}"));
+  //print(jsonEncode("Data1: ${message.data['title'].toString()}"));
 
   // Box box = await openBox(name: "notifications");
   // box.add({
@@ -109,15 +98,53 @@ void setNotification(RemoteMessage message) async {
       ));
 }
 
+final GlobalKey<NavigatorState> navigatorKey =
+    GlobalKey(debugLabel: "Main Navigator");
+
+late String routeToGo = '/';
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+FlutterLocalNotificationsPlugin();
+String? payload;
+
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+ // print("_firebaseMessagingBackgroundHandler Clicked!");
+  routeToGo = '/second';
+ // print(message.notification!.body);
+  flutterLocalNotificationsPlugin.show(
+      message.notification.hashCode,
+      message.notification?.title,
+      message.notification?.body,
+      NotificationDetails(
+        android: AndroidNotificationDetails(
+          channel.id,
+          channel.name,
+        ),
+      ));
+}
+
+const AndroidNotificationChannel channel = AndroidNotificationChannel(
+  'high_importance_channel', // id
+  'High Importance Notifications', // titletion
+  importance: Importance.high,
+);
+
+
+Future<void> selectNotification(String? payload) async {
+  routeToGo = "chat";
+  if (payload != null) {
+    debugPrint('notification payload: $payload');
+    navigatorKey.currentState?.pushNamed('/second');
+  }
+}
+
 void main() async {
-
   SocketController socketController = SocketController();
-  socket =  socketController.getInstance();
-
+  socket = socketController.getInstance();
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   // var isEnabled = await Wakelock.enabled;
-  // if (!isEnabled) { 
+  // if (!isEnabled) {
   //   await Wakelock.enable();
   // }
 
@@ -126,14 +153,16 @@ void main() async {
   FirebaseMessaging.onBackgroundMessage(_firebaseMessageHandler);
 
   FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-    print("onMessageOpenedApp : called");
-    print("Data2: ${message.data['title'].toString()}");
+    routeToGo = "chat";
+  //  print("onMessageOpenedApp : called");
+   // print("Data2: ${message.data['title'].toString()}");
     GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+    //Navigator.of(navigatorKey.currentState!.context).pushNamed(MainPage(socket!, 0));
 
-    // Navigator.push(
-    //     navigatorKey.currentState!.context,
-    // MaterialPageRoute(
-    // builder: (context) => ChatScreen(socket!)));
+    Navigator.push(
+        navigatorKey.currentState!.context,
+    MaterialPageRoute(
+    builder: (context) => ChatScreen(socket!)));
   });
 
   FirebaseMessaging.onMessage.listen((RemoteMessage message) => _firebaseMessageHandler(message));
@@ -142,17 +171,17 @@ void main() async {
 
   messaging.setForegroundNotificationPresentationOptions(alert: true, badge: true, sound: true);
 
-  _notificationsPlugin.resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin>()
+  flutterLocalNotificationPlugin.resolvePlatformSpecificImplementation< AndroidFlutterLocalNotificationsPlugin>()
       ?.createNotificationChannel(androidNotificationChannel);
 
-  _notificationsPlugin.resolvePlatformSpecificImplementation<
+  flutterLocalNotificationPlugin.resolvePlatformSpecificImplementation<
           IOSFlutterLocalNotificationsPlugin>()
       ?.requestPermissions(
         alert: true,
         badge: true,
         sound: true,
       );
+
   await GetStorage.init();
   await Hive.initFlutter();
   runApp(const MyApp());
@@ -163,71 +192,93 @@ class MyApp extends StatefulWidget {
 
   @override
   State<MyApp> createState() => _MyAppState();
-
 }
 
 class _MyAppState extends State<MyApp> {
+  Socket? socket;
 
-  Socket? socket ;
-
+  late String token;
+  getToken() async {
+    token = (await FirebaseMessaging.instance.getToken())!;
+    print(token);
+  }
 
   @override
   void initState() {
     super.initState();
     SocketController socketController = SocketController();
-    socket =  socketController.getInstance();
+    socket = socketController.getInstance();
+    getToken();
   }
 
   @override
   void dispose() {
-    if(socket!=null) {
+    if (socket != null) {
       socket!.disconnect();
     }
     super.dispose();
   }
 
-
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Neways3',
-      theme: ThemeData(
-        // primarySwatch: DFColor.primary,
-        scaffoldBackgroundColor: Colors.white,
-        colorScheme: ColorScheme.fromSwatch().copyWith(
-          primary: DColors.primary,
-          secondary: DColors.primary.withOpacity(.7),
+        debugShowCheckedModeBanner: false,
+        title: 'Neways3',
+        theme: ThemeData(
+          // primarySwatch: DFColor.primary,
+          scaffoldBackgroundColor: Colors.white,
+          colorScheme: ColorScheme.fromSwatch().copyWith(
+            primary: DColors.primary,
+            secondary: DColors.primary.withOpacity(.7),
+          ),
         ),
-      ),
-      localizationsDelegates: const [
-        GlobalWidgetsLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        MonthYearPickerLocalizations.delegate,
-      ],
-      builder: EasyLoading.init(),
-      home:
-      // MentionableTextFieldWidget([
-      //   MentionItem("Khandakar"),
-      //   MentionItem("Amir"),
-      //   MentionItem("Hamza")])
-
-        //PrebookScreen()
-
-      // InkWell(
-      //   onTap: (){
-      //     PhoneContactController().loadContacts("72505", "employee");
-      //   },
-      //   child: Center(child: Text("test")),
-      // )
-
-      SplashScreen(socket!)
+        localizationsDelegates: const [
+          GlobalWidgetsLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          MonthYearPickerLocalizations.delegate,
+        ],
+        builder: EasyLoading.init(),
+        navigatorKey: navigatorKey,
+        initialRoute: routeToGo.isNotEmpty ? routeToGo : '/',
+        // home: const MyHomePage(title: 'Flutter Demo Home Page'),
+        onGenerateRoute: (RouteSettings settings) {
+          switch (settings.name) {
+            case '/':
+              return MaterialPageRoute(
+                builder: (_) => SplashScreen(socket!),
+              );
+              break;
+            case '/chat':
+              return MaterialPageRoute(
+                builder: (_) => MainPage( socket!, 0 ),
+              );
+              break;
+            // default:
+            //   return _errorRoute();
+          }
+        },
+       // home: SplashScreen(socket!)
     );
+            // MentionableTextFieldWidget([
+            //   MentionItem("Khandakar"),
+            //   MentionItem("Amir"),
+            //   MentionItem("Hamza")])
+
+            //PrebookScreen()
+
+            // InkWell(
+            //   onTap: (){
+            //     PhoneContactController().loadContacts("72505", "employee");
+            //   },
+            //   child: Center(child: Text("test")),
+            // )
+
+
   }
 }
 
-setUpNotificationClick(FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin){
+/*setUpNotificationClick(FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin){
   const AndroidInitializationSettings initializationSettingsAndroid =
   AndroidInitializationSettings('app_icon');
 
@@ -236,7 +287,4 @@ setUpNotificationClick(FlutterLocalNotificationsPlugin flutterLocalNotifications
       android: initializationSettingsAndroid);
   // await flutterLocalNotificationsPlugin.initialize(initializationSettings,
   //     onSelectNotification: onSelectNotification);
-}
-
-
-
+}*/

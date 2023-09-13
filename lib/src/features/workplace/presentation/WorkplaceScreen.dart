@@ -1,11 +1,14 @@
 // ignore_for_file: file_names, must_be_immutable
 
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:neways3/src/features/contacts/presentation/ContactScreen.dart';
+import 'package:neways3/src/features/fired_employee/components/FiredApproveScreen.dart';
 import 'package:neways3/src/features/leave/components/LeaveApproveScreen.dart';
 import 'package:neways3/src/features/leave/components/LeaveScreen.dart';
 import 'package:neways3/src/features/fired_employee/components/FiredEmployeeScreen.dart';
@@ -16,6 +19,7 @@ import 'package:neways3/src/features/purchase_money/components/PurchaseMoneyScre
 import 'package:neways3/src/features/requisition/components/view_availablle_requisition.dart';
 import 'package:neways3/src/features/task/components/DHeadTaskApproval.dart';
 import 'package:neways3/src/features/workplace/controller/WorkplaceController.dart';
+import 'package:neways3/src/features/workplace/model/PendingApproval.dart';
 import 'package:neways3/src/utils/constants.dart';
 
 import '../../advance_salary/components/AdvanceSalaryApproveScreen.dart';
@@ -80,11 +84,12 @@ class WorkplaceScreen extends StatelessWidget {
                           children: [
                             Text("DASHBOARD", style: DTextStyle.textTitleStyle),
                             FlutterSwitch(
+
                               activeText: "APPROVEAL",
                               inactiveText: "DISABLE",
                               value: controller.isHidden,
                               valueFontSize: 13.0,
-                              width: 100,
+                              width: 120,
                               height: 32,
                               activeIcon: const Icon(Icons.check,
                                   color: DColors.primary),
@@ -219,6 +224,7 @@ class WorkplaceScreen extends StatelessWidget {
                                 },
                                 title: 'New Module',
                               ),
+
                             ],
                           ),
                         ),
@@ -243,6 +249,7 @@ class WorkplaceScreen extends StatelessWidget {
                                 crossAxisCount: 4,
                                 children: [
                                   DashboardGrid(
+                                    pendingCount: controller.dHeadPendingApprovals.leave!,
                                     color: Colors.amberAccent,
                                     icon: Icons.airplane_ticket_outlined,
                                     onPress: () =>
@@ -250,6 +257,7 @@ class WorkplaceScreen extends StatelessWidget {
                                     title: 'Leave',
                                   ),
                                   DashboardGrid(
+                                    pendingCount: controller.dHeadPendingApprovals.purchase!,
                                     color: Colors.lightBlueAccent,
                                     icon: Icons.shopping_cart_outlined,
                                     onPress: () => Get.to(
@@ -257,6 +265,7 @@ class WorkplaceScreen extends StatelessWidget {
                                     title: 'Purchase',
                                   ),
                                   DashboardGrid(
+                                    pendingCount: controller.dHeadPendingApprovals.taDa!,
                                     color: Colors.blueAccent,
                                     icon: Icons.request_quote_outlined,
                                     onPress: () =>
@@ -264,6 +273,7 @@ class WorkplaceScreen extends StatelessWidget {
                                     title: 'TA/DA',
                                   ),
                                   DashboardGrid(
+                                    pendingCount: controller.dHeadPendingApprovals.advance!,
                                     color: Colors.deepPurpleAccent,
                                     icon: Icons.payments_outlined,
                                     onPress: () => Get.to(
@@ -271,6 +281,7 @@ class WorkplaceScreen extends StatelessWidget {
                                     title: 'Advance Salary',
                                   ),
                                   DashboardGrid(
+                                    pendingCount: controller.dHeadPendingApprovals.emergencyWork!,
                                     color: Colors.yellow,
                                     icon: Icons.emergency_share_rounded,
                                     onPress: () => Get.to(
@@ -278,29 +289,36 @@ class WorkplaceScreen extends StatelessWidget {
                                     title: 'Emergency Work',
                                   ),
                                   DashboardGrid(
+                                    //endingCount: controller.dHeadPendingApprovals.car!,
                                     color: Colors.pinkAccent,
                                     icon: Icons.car_rental,
                                     onPress: () {},
                                     title: 'Car Requisition',
                                   ),
                                   DashboardGrid(
+                                    pendingCount: controller.dHeadPendingApprovals.resign!,
                                     color: Colors.teal,
                                     icon: Icons.work_off,
                                     onPress: () =>
                                         Get.to(const ResignApproveScreen()),
                                     title: 'Resign',
                                   ),
+
                                   DashboardGrid(
+                                    pendingCount: controller.dHeadPendingApprovals.fired!,
                                     color: Colors.red,
-                                    icon: Icons.work_off_outlined,
+                                    icon: Icons.directions_off,
                                     onPress: () =>
                                         Get.to(const FiredEmployeeScreen()),
                                     title: 'Fired',
                                   ),
 
+
+
                                   DashboardGrid(
+                                    //pendingCount: controller.dHeadPendingApprovals.requisition!,
                                     color: Colors.green,
-                                    icon: Icons.work_off_outlined,
+                                    icon: Icons.request_page_outlined,
                                     onPress: () {
                                       requisitionController.getAllAvailableRequisition(1, 3);
                                       Navigator.push(context,
@@ -314,6 +332,7 @@ class WorkplaceScreen extends StatelessWidget {
                                   //   onPress: () {
                                   //     Get.to(() => DHeadTaskApproval());,
                                   //
+
                                   //   }, title: 'Task Approval',
                                   // ),
                                 ],
@@ -343,6 +362,7 @@ class WorkplaceScreen extends StatelessWidget {
                                 crossAxisCount: 4,
                                 children: [
                                   DashboardGrid(
+                                    pendingCount: controller.bossPendingApprovals.leave!,
                                     color: Colors.amberAccent,
                                     icon: Icons.airplane_ticket_outlined,
                                     onPress: () =>
@@ -350,6 +370,7 @@ class WorkplaceScreen extends StatelessWidget {
                                     title: 'Leave',
                                   ),
                                   DashboardGrid(
+                                    pendingCount: controller.bossPendingApprovals.purchase!,
                                     color: Colors.lightBlueAccent,
                                     icon: Icons.shopping_cart_outlined,
                                     onPress: () => Get.to(
@@ -357,6 +378,7 @@ class WorkplaceScreen extends StatelessWidget {
                                     title: 'Purchase',
                                   ),
                                   DashboardGrid(
+                                    pendingCount: controller.bossPendingApprovals.taDa!,
                                     color: Colors.blueAccent,
                                     icon: Icons.request_quote_outlined,
                                     onPress: () =>
@@ -364,37 +386,47 @@ class WorkplaceScreen extends StatelessWidget {
                                     title: 'TA/DA',
                                   ),
                                   DashboardGrid(
+                                    pendingCount: controller.bossPendingApprovals.advance!,
                                     color: Colors.deepPurpleAccent,
                                     icon: Icons.payments_outlined,
                                     onPress: () => Get.to(
                                         const AdvanceSalaryApproveScreen()),
                                     title: 'Advance Salary',
                                   ),
+
+                                  //if(controller.box.read("employeeId")== '72505')
                                   DashboardGrid(
+                                    pendingCount: controller.bossPendingApprovals.emergencyWork!,
                                     color: Colors.yellow,
                                     icon: Icons.emergency_share_rounded,
                                     onPress: () => Get.to(
                                         const EmergencyWorkApproveScreen()),
                                     title: 'Emergency Work',
                                   ),
+                                  if(controller.box.read("employeeId")== '72505')
                                   DashboardGrid(
+                                    //pendingCount: controller.bossPendingApprovals!.car!,
                                     color: Colors.pinkAccent,
                                     icon: Icons.car_rental,
                                     onPress: () {},
                                     title: 'Car Requisition',
                                   ),
+                                  //if(controller.box.read("employeeId")== '72505')
                                   DashboardGrid(
+                                    pendingCount: controller.bossPendingApprovals.resign!,
                                     color: Colors.teal,
                                     icon: Icons.work_off,
                                     onPress: () =>
                                         Get.to(const ResignApproveScreen()),
                                     title: 'Resign',
                                   ),
+                                  //if(controller.box.read("employeeId")== '72505')
                                   DashboardGrid(
+                                    pendingCount: controller.bossPendingApprovals.fired!,
                                     color: Colors.red,
-                                    icon: Icons.work_off_outlined,
+                                    icon: Icons.directions_off,
                                     onPress: () =>
-                                        Get.to(const FiredEmployeeScreen()),
+                                        Get.to(const FiredApproveScreen()),//FiredEmployeeScreen()
                                     title: 'Fired',
                                   ),
 
@@ -428,12 +460,14 @@ class DashboardGrid extends StatelessWidget {
   Color iconColor;
   String title;
   VoidCallback onPress;
+  int pendingCount;
   DashboardGrid({
     required this.color,
     required this.icon,
     required this.title,
     required this.onPress,
     this.iconColor = Colors.white,
+    this.pendingCount = 0,
     Key? key,
   }) : super(key: key);
 
@@ -441,33 +475,66 @@ class DashboardGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onPress,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
+      child: Stack(
+        alignment: Alignment.center,
         children: [
-          Container(
-            padding: EdgeInsets.all(DPadding.full),
-            decoration: BoxDecoration(
-              color: color,
-              borderRadius: BorderRadius.circular(DPadding.half),
-              boxShadow: [
-                BoxShadow(
-                  color: color.withOpacity(0.3),
-                  spreadRadius: 1.5,
-                  blurRadius: 7,
-                  offset: const Offset(8, 8), // changes position of shadow
+          Padding(
+            padding: EdgeInsets.all(5),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  padding: EdgeInsets.all(DPadding.full),
+                  decoration: BoxDecoration(
+                    color: color,
+                    borderRadius: BorderRadius.circular(DPadding.half),
+                    boxShadow: [
+                      BoxShadow(
+                        color: color.withOpacity(0.3),
+                        spreadRadius: 1.5,
+                        blurRadius: 7,
+                        offset: const Offset(8, 8), // changes position of shadow
+                      ),
+                    ],
+                  ),
+                  child: Icon(
+                    icon,
+                    color: iconColor,
+                    size: 22,
+                  ),
                 ),
+                const HeightSpace(),
+                Expanded(child: Text(title, style: DTextStyle.textSubTitleStyle2, textAlign: TextAlign.center, overflow: TextOverflow.fade, maxLines: 1,
+                  softWrap: false,),)
               ],
             ),
-            child: Icon(
-              icon,
-              color: iconColor,
-              size: 22,
-            ),
           ),
-          const HeightSpace(),
-          Expanded(child: Text(title, style: DTextStyle.textSubTitleStyle2, textAlign: TextAlign.center, overflow: TextOverflow.fade, maxLines: 1,
-            softWrap: false,),)
+
+          if(pendingCount>0)
+          Positioned(
+            top: 0,
+            right: 7,
+            child: Container(
+              height: 20,
+              width: 20,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15),
+                  color: color,
+                border: Border.all(color: Colors.white),
+                boxShadow: [
+                  BoxShadow(
+                    color: color.withOpacity(0.4),
+                    spreadRadius: 1.2,
+                    blurRadius:5,
+                    offset: const Offset(4, -1), // changes position of shadow
+                  ),
+                ],
+              ),
+              child: Text("$pendingCount",style: const TextStyle(color: DColors.white, fontWeight: FontWeight.bold),),
+            ),
+          )
         ],
       ),
     );

@@ -10,6 +10,8 @@ import 'package:material_dialogs/widgets/buttons/icon_button.dart';
 import 'package:material_dialogs/widgets/buttons/icon_outline_button.dart';
 import 'package:neways3/src/features/attendence/presentation/AttendenceScreen.dart';
 import 'package:neways3/src/features/profile/controller/ProfileController.dart';
+import 'package:neways3/src/features/profile/presentation/MyHolidayCalender.dart';
+import 'package:neways3/src/features/profile/presentation/MyHolidaysScreen.dart';
 import 'package:neways3/src/features/salary/presentation/SalaryScreen.dart';
 import 'package:neways3/src/features/wallet/presentation/WalletScreen.dart';
 import 'package:neways3/src/utils/constants.dart';
@@ -76,10 +78,10 @@ class ProfileScreen extends StatelessWidget {
                               Text(controller.box.read('name'),
                                   style: DTextStyle.textTitleStyle),
                               HeightSpace(height: DPadding.half / 2),
-                              // Text(
-                              //     "🎉 ${controller.box.read('designationName')}",
-                              //     style: DTextStyle.textSubTitleStyle),
-
+                              Text(
+                                  "🎉 ${controller.box.read('designationName')}",
+                                  style: DTextStyle.textSubTitleStyle),
+                              if(false)
                               Padding(
                                 padding: const EdgeInsets.symmetric(vertical: 5.0),
                                 child: LinearPercentIndicator(
@@ -218,6 +220,18 @@ class ProfileScreen extends StatelessWidget {
                                   MaterialPageRoute(
                                       builder: (context) =>
                                           AttendenceScreen()))),
+                            ),const Divider(),
+                            ProfileListTile(
+                              icon: 'holiday.svg',
+                              title: 'My Holidays',
+                              onPress: (()
+                              {
+
+                              controller.getHolidays();
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(builder: (context) => MyHolidayCalender(controller)));
+                                  }),
                             ),
                             const Divider(),
                             ProfileListTile(

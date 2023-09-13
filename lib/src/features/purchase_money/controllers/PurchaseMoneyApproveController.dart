@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
+import 'package:neways3/src/utils/functions.dart';
 import '../models/PurchaseMoneyResponse.dart';
 import '../services/purchase_money_api_services.dart';
 
@@ -29,20 +30,23 @@ class PurchaseMoneyApproveController extends GetxController {
     });
     EasyLoading.dismiss();
     isLoadding = false;
-
     update();
   }
 
-  action(int status, PurchaseMoneyResponse response) async {
+
+  purchaseMoneyRequestDepHeadAndBossUpdate(String action, PurchaseMoneyResponse response) async {
+    print("action: $action");
+    //return;
     EasyLoading.show();
     isLoadding = true;
-    await PurchaseMoneyAPIServices.leaveRequestDepHeadUpdate(data: {
+    await PurchaseMoneyAPIServices.purchaseMoneyRequestDepHeadAndBossUpdate(data: {
       "id": response.id.toString(),
       "products": jsonEncode([]),
       "employee_id": response.employeeId.toString(),
-      "status": status.toString(),
+      "action": action,
       "note": noteController.text
     });
+    noteController.text = "";
     EasyLoading.dismiss();
     isLoadding = false;
     await getAllData();

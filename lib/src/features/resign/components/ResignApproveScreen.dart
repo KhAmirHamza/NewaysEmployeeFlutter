@@ -20,7 +20,7 @@ class ResignApproveScreen extends StatelessWidget {
           leading: InkWell(
               onTap: () => Get.back(),
               child: const Icon(Icons.arrow_back_ios_new_rounded)),
-          title: const Text("Resign Approvel"),
+          title: const Text("Resign Approval"),
           centerTitle: true,
           elevation: 0,
           actions: [
@@ -57,21 +57,22 @@ class ResignApproveScreen extends StatelessWidget {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
+
+                                  ClipRRect(
+                                    borderRadius:
+                                    BorderRadius.circular(100),
+                                    child: Image.network(
+                                        response.photo.toString(),
+                                        width: 80,
+                                        height: 80,
+                                        fit: BoxFit.fill),
+                                  ),
                                   WidthSpace(width: DPadding.full),
                                   Column(
                                     mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      ClipRRect(
-                                        borderRadius:
-                                            BorderRadius.circular(100),
-                                        child: Image.network(
-                                            response.photo.toString(),
-                                            width: 80,
-                                            height: 80,
-                                            fit: BoxFit.fill),
-                                      ),
+
                                       HeightSpace(height: DPadding.half),
                                       Text(
                                         response.fullName.toString(),
@@ -79,34 +80,33 @@ class ResignApproveScreen extends StatelessWidget {
                                             fontSize: 18,
                                             fontWeight: FontWeight.bold),
                                       ),
-                                    ],
-                                  ),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      TextButton.icon(
-                                          onPressed: () => defaultDialog(
-                                              title:
+                                      HeightSpace(height: DPadding.half),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        children: [
+                                          TextButton.icon(
+                                              onPressed: () => defaultDialog(
+                                                  title:
                                                   "Are you sure accept this request?",
-                                              okPress: () async {
-                                                Get.back();
-                                                await controller.action(
-                                                    "approve", response);
-                                              },
-                                              widget: const SizedBox()),
-                                          style: TextButton.styleFrom(
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: DPadding.full),
-                                              backgroundColor:
+                                                  okPress: () async {
+                                                    Get.back();
+                                                    await controller.action(
+                                                        "approve", response);
+                                                  },
+                                                  widget: const SizedBox()),
+                                              style: TextButton.styleFrom(
+                                                  padding: EdgeInsets.symmetric(
+                                                      horizontal: DPadding.full),
+                                                  backgroundColor:
                                                   DColors.background),
-                                          icon:
+                                              icon:
                                               const Icon(Icons.check, size: 18),
-                                          label: const Text('Accept')),
-                                      const WidthSpace(),
-                                      TextButton.icon(
-                                          onPressed: () => defaultDialog(
+                                              label: const Text('Accept')),
+                                          const WidthSpace(),
+                                          TextButton.icon(
+                                              onPressed: () => defaultDialog(
                                                 title:
-                                                    "Are you sure reject this request?",
+                                                "Are you sure reject this request?",
                                                 okPress: () async {
                                                   Get.back();
                                                   await controller.action(
@@ -115,18 +115,20 @@ class ResignApproveScreen extends StatelessWidget {
                                                 },
                                                 widget: const SizedBox(),
                                               ),
-                                          style: TextButton.styleFrom(
-                                              foregroundColor:
+                                              style: TextButton.styleFrom(
+                                                  foregroundColor:
                                                   DColors.highLight,
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: DPadding.full),
-                                              backgroundColor: DColors.highLight
-                                                  .withOpacity(0.2)),
-                                          icon:
+                                                  padding: EdgeInsets.symmetric(
+                                                      horizontal: DPadding.full),
+                                                  backgroundColor: DColors.highLight
+                                                      .withOpacity(0.2)),
+                                              icon:
                                               const Icon(Icons.close, size: 18),
-                                          label: const Text('Reject')),
+                                              label: const Text('Reject')),
+                                        ],
+                                      )
                                     ],
-                                  )
+                                  ),
                                 ],
                               ),
                               const Divider(),

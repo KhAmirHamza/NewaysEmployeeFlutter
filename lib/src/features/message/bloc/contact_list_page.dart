@@ -266,8 +266,9 @@ class _ContactWidgetState extends State<ContactWidget> {
                   element.participants!.any((element) => element.employeeId==widget.selectedEmployee.employeeId)
           ));
           if(foundConversation!=null){
+            print("conversation found: ${foundConversation.toJson().toString()}");
             convsController.getMessages(foundConversation.id!, 0, 50, 10);
-            Navigator.push(
+            Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
                     builder: (context) =>
@@ -296,7 +297,7 @@ class _ContactWidgetState extends State<ContactWidget> {
               photo,
               widget.currentEmployee,
               admins);
-          Navigator.push(
+          Navigator.pushReplacement(
               context,
               MaterialPageRoute(
                   builder: (context) =>

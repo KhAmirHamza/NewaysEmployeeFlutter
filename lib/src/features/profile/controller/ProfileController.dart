@@ -4,8 +4,10 @@ import 'package:client_information/client_information.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:neways3/src/features/login/models/Holiday.dart';
 import 'package:neways3/src/features/profile/models/profile_response_model.dart';
 import 'package:neways3/src/features/profile/services/profile_service.dart';
 import 'package:neways3/src/utils/functions.dart';
@@ -14,16 +16,20 @@ import '../../linked_devices/controller/LinkedDeviceController.dart';
 import '../../linked_devices/services/LinkedDeviceService.dart';
 
 class ProfileController extends GetxController {
+  List<Holiday> holidays =  [];
   late ProfileResponseModel profile;
   late ClientInformation diviceInfo;
   final FirebaseMessaging messaging = FirebaseMessaging.instance;
   final box = GetStorage();
+  late bool isLoading = false;
+
   @override
   void onInit() {
     // TODO: implement onInit
     super.onInit();
     systemUi();
     getInfo();
+    getHolidays();
   }
 
   systemUi() {
@@ -60,5 +66,22 @@ class ProfileController extends GetxController {
       "ip_address": '',
       "token": diviceInfo.deviceId,
     });
+  }
+
+  getHolidays() async {
+    EasyLoading.show();
+    await ProfileService.getHolidays().then((value) {
+      if (value.runtimeType == List<Holiday>) {
+        holidays = value;
+        isLoading = false;
+      } else {
+        // error
+
+      }
+    });
+
+    //update();
+    refresh();
+    EasyLoading.dismiss();
   }
 }

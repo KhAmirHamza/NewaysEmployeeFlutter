@@ -91,26 +91,50 @@ class TADAAPIServices {
       }
       print(e.response?.statusCode);
     }
+    return null;
+  }
 
+  static dHeadAndBossApproval({required String action, required List<int> ids}) async {
+    try {
+
+     // print("ids");
+     // print(ids.toString());
+     //return;
+
+      var response = await httpAuthPost(path: '/ta_da_dhead_and_boss_approval/$action', data: {'ids': jsonEncode(ids)});
+      //print("response.body");
+      //print(response.body);
+      if (response.statusCode == 200) {
+        //print("response");
+        //print(response.body);
+        return jsonDecode(response.body)['message'];
+      } else if (response.statusCode == 401) {
+        return jsonDecode(response.body)['error'];
+      }
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 401) {
+        return {"error": "Server Error"};
+      }
+      print(e.response?.statusCode);
+    }
     return null;
   }
 
   static approved({required id}) async {
     try {
       var response = await httpAuthGet(path: '/ta_da_dep_head_approve/$id');
-      print(response.body);
+      //print(response.body);
       if (response.statusCode == 200) {
         return jsonDecode(response.body)['message'];
       } else if (response.statusCode == 401) {
         return jsonDecode(response.body)['error'];
       }
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       if (e.response?.statusCode == 401) {
         return {"error": "Server Error"};
       }
       print(e.response?.statusCode);
     }
-
     return null;
   }
 

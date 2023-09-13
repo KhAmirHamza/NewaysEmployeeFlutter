@@ -44,9 +44,11 @@ class LeaveAPIServices {
     return null;
   }
 
-  static getPendingData() async {
+  static getPendingData(int isBoss) async {
+
+    print("getPendingData: $isBoss");
     try {
-      var response = await httpAuthGet(path: '/employee_leave_request');
+      var response = await httpAuthGet(path: '/employee_leave_request/$isBoss');
       print(response.body);
       if (response.statusCode == 200) {
         return leaveResponseFromJson(response.body);
@@ -65,6 +67,25 @@ class LeaveAPIServices {
     try {
       var response = await httpAuthPost(
           path: '/leave_request_dep_head_update', data: data);
+      print(response.body);
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body)['message'];
+      }
+    } on DioError catch (e) {
+      if (e.response?.statusCode == 401) {
+        return {"error": "Server Error"};
+      }
+      print(e.response?.statusCode);
+    }
+
+    return null;
+  }
+
+
+  static leaveRequestBossUpdate({required data}) async {
+    try {
+      var response = await httpAuthPost(
+          path: '/leave_request_boss_update', data: data);
       print(response.body);
       if (response.statusCode == 200) {
         return jsonDecode(response.body)['message'];

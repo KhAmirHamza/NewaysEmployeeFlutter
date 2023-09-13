@@ -180,6 +180,7 @@ class _PrebookScreenState extends State<PrebookScreen> {
                               onTap: (){setState(() {});},
                               onChanged: (text){
                                 setState(() {
+                                  controller.emailController.text = controller.emailController.text.removeAllWhitespace;
                                   controller.validEmail = controller.isValidEmail(text);
                                 });
                               },
@@ -298,8 +299,7 @@ class _PrebookScreenState extends State<PrebookScreen> {
                             "Educational Qualification*",
                             style: TextStyle(color: Colors.grey.shade700),
                           ),
-
-                          MultipleChipsChoice(),
+                          const MultipleChipsChoice(),
                         ],),
                     ),
                     PrebookTextFiled(controller.emergencyContactName1Controller, "Emergency Contact Name 1 ", controller, controller.emergencyContactName1FocusNode , true),

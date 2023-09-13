@@ -15,12 +15,11 @@ get isDepHead {
 }
 
 get isBoss {
-  return GetStorage().read('departmentName') == "Top Management ";
+  return GetStorage().read('reportingBoss') == GetStorage().read('employeeId');
 }
 
 class DColors {
   DColors._();
-
   static const Color primary = Color(0xFF676FA3);
   static Color secondary = const Color(0xFF676FA3).withOpacity(0.2);
   static const Color background = Color(0xFFEEF2FF);

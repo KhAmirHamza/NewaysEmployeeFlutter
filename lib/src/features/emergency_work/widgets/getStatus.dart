@@ -27,10 +27,16 @@ getStatus({status}) {
     message = "Boss Rejected";
     color = Colors.redAccent;
   } else if (status == 3) {
-    message = "Boss Pending";
+    message = "HR Pending";
     color = Colors.blue;
   } else if (status == 4) {
-    message = "D-head Reject";
+    message = "D-head Rejected";
+    color = Colors.red;
+  } else if (status == 5) {
+    message = "Boss Pending";
+    color = Colors.blue;
+  } else if (status == 6) {
+    message = "HR Rejected";
     color = Colors.red;
   } else {
     message = "Rejected";

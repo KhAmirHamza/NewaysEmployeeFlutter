@@ -44,9 +44,9 @@ class EmergencyWorkApproveScreen extends StatelessWidget {
                   EmergencyWorkResponse response = controller.responses[index];
                   return Padding(
                     padding: EdgeInsets.symmetric(
-                        horizontal: DPadding.half, vertical: DPadding.half),
+                        horizontal: DPadding.half/2, vertical: DPadding.half/2-2),
                     child: Card(
-                      elevation: 0,
+                      elevation: 5,
                       child: Padding(
                         padding: EdgeInsets.all(DPadding.half),
                         child: Column(
@@ -61,7 +61,7 @@ class EmergencyWorkApproveScreen extends StatelessWidget {
                                     Text(
                                       response.employeeName.toString(),
                                       style: TextStyle(
-                                          fontSize: 18,
+                                          fontSize: 16,
                                           fontWeight: FontWeight.bold,
                                           color: Colors.grey.shade800),
                                     ),

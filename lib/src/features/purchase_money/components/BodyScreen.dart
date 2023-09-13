@@ -60,7 +60,7 @@ class BodyScreen extends StatelessWidget {
                                           fontWeight: FontWeight.bold)),
                                   HeightSpace(height: DPadding.half / 2),
                                   Text(
-                                    '${response.requestAmount} BDT',
+                                    '${response.amount} BDT',
                                     style: TextStyle(
                                         fontSize: 12,
                                         color: Colors.grey.shade600),
@@ -147,8 +147,7 @@ class BodyScreen extends StatelessWidget {
                             alignment: Alignment.center,
                             child: TextButton.icon(
                                 onPressed: () => defaultDialog(
-                                      title:
-                                          "Are you sure delete this request?",
+                                      title: "Are you sure delete this request?",
                                       okPress: () async {
                                         await controller.delete(response.id);
                                       },

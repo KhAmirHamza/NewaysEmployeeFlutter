@@ -27,6 +27,18 @@ class TADAApproveController extends GetxController {
     update();
   }
 
+  dHeadAndBossApproval(String action, List<int> tadaIds) async {
+    EasyLoading.show();
+    await TADAAPIServices.dHeadAndBossApproval(action: action, ids: tadaIds).then((data) {
+      Get.back();
+      Get.snackbar('Message', data,
+          snackPosition: SnackPosition.BOTTOM,
+          margin: const EdgeInsets.all(16));
+    });
+    EasyLoading.dismiss();
+    getAllData();
+  }
+
   approved(id) async {
     EasyLoading.show();
     await TADAAPIServices.approved(id: id).then((data) {

@@ -2,9 +2,12 @@
 
 import 'package:client_information/client_information.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:neways3/src/features/login/components/LoginScreen.dart';
+import 'package:neways3/src/features/workplace/model/PendingApproval.dart';
+import 'package:neways3/src/features/workplace/services/WorkplaceService.dart';
 
 import '../../../utils/functions.dart';
 import '../../linked_devices/services/LinkedDeviceService.dart';
@@ -14,10 +17,17 @@ class WorkplaceController extends GetxController {
   late ClientInformation diviceInfo;
   final FirebaseMessaging messaging = FirebaseMessaging.instance;
   bool isHidden = true;
+
+  PendingApprovals dHeadPendingApprovals = PendingApprovals(leave: 0, purchase: 0,taDa: 0, advance: 0, emergencyWork: 0, resign: 0, fired: 0);
+  PendingApprovals bossPendingApprovals = PendingApprovals(leave: 0, purchase: 0,taDa: 0, advance: 0, emergencyWork: 0, resign: 0, fired: 0);
+  late bool isLoading = false;
+
   @override
   void onInit() {
     super.onInit();
     getInfo();
+    getAllDHeadPendingCount();
+    getAllBossPendingCount();
   }
 
   getInfo() async {
@@ -35,4 +45,40 @@ class WorkplaceController extends GetxController {
       }
     });
   }
+
+  getAllDHeadPendingCount() async {
+    EasyLoading.show();
+    await WorkplaceService.getAllDHeadPendingCount().then((value) {
+      if (value.runtimeType == PendingApprovals) {
+        // print("getAllDHeadPendingCount called");
+        dHeadPendingApprovals = value;
+        isLoading = false;
+      } else {
+        // error
+      }
+    });
+
+    //update();
+    refresh();
+    EasyLoading.dismiss();
+  }
+
+
+  getAllBossPendingCount() async {
+    EasyLoading.show();
+    await WorkplaceService.getAllBossPendingCount().then((value) {
+      if (value.runtimeType == PendingApprovals) {
+        // print("getAllBossPendingCount called");
+        bossPendingApprovals = value;
+        isLoading = false;
+      } else {
+        // error
+      }
+    });
+
+    //update();
+    refresh();
+    EasyLoading.dismiss();
+  }
+
 }

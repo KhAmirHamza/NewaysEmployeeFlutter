@@ -50,6 +50,9 @@ class TADAController extends GetxController {
   String message = '';
   List<TadaResponse> responses = [];
 
+  TextEditingController fromOtherController = TextEditingController();
+  TextEditingController toOtherController = TextEditingController();
+
   @override
   void onInit() {
     super.onInit();
@@ -75,8 +78,18 @@ class TADAController extends GetxController {
           snackPosition: SnackPosition.BOTTOM,
           margin: EdgeInsets.all(DPadding.full));
       return false;
+    } else if (fromController.text.trim()=="Other" && fromOtherController.text.isEmpty) {
+      Get.snackbar('Wrong', "Destination from other must be required",
+          snackPosition: SnackPosition.BOTTOM,
+          margin: EdgeInsets.all(DPadding.full));
+      return false;
     } else if (toController.text.isEmpty) {
       Get.snackbar('Wrong', "Destination To must be required",
+          snackPosition: SnackPosition.BOTTOM,
+          margin: EdgeInsets.all(DPadding.full));
+      return false;
+    } else if (toController.text.trim()=="Other" && toOtherController.text.isEmpty) {
+      Get.snackbar('Wrong', "Destination to other must be required",
           snackPosition: SnackPosition.BOTTOM,
           margin: EdgeInsets.all(DPadding.full));
       return false;
@@ -96,13 +109,17 @@ class TADAController extends GetxController {
           margin: EdgeInsets.all(DPadding.full));
       return false;
     }
+
+    String from = fromController.text.trim() == "Other"? fromOtherController.text.trim() : fromController.text.trim();
+    String to = toController.text.trim() == "Other"? toOtherController.text.trim() : toController.text.trim();
+
     EasyLoading.show();
     await TADAAPIServices.submit(
       data: {
         "transport_date":
             "${selectedDate.day}/${selectedDate.month}/${selectedDate.year}",
-        "destination_from": fromController.text,
-        "destination_to": toController.text,
+        "destination_from": from,
+        "destination_to": to,
         "transport_type": transportTypeController.text,
         "transport_details": transportationDetailController.text,
         "transport_amount": transportAmountController.text,

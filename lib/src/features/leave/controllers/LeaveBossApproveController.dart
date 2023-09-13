@@ -20,7 +20,7 @@ class LeaveBossApproveController extends GetxController {
   getAllData() async {
     EasyLoading.show();
     isLoadding = true;
-    await LeaveAPIServices.getPendingData().then((data) {
+    await LeaveAPIServices.getPendingData(1).then((data) {
       if (data.runtimeType == List<LeaveResponse>) {
         leaves = data;
       }
@@ -29,6 +29,22 @@ class LeaveBossApproveController extends GetxController {
     isLoadding = false;
 
     update();
+  }
+
+  updateLeaveRequestBossUpdate(int status, LeaveResponse leave) async{
+    EasyLoading.show();
+    isLoadding = true;
+    await LeaveAPIServices.leaveRequestBossUpdate(data: {
+      "id": leave.id.toString(),
+      "e_db_id": leave.eDbId.toString(),
+      "employee_id": leave.employeeId.toString(),
+      "status": status.toString(),
+      "note": noteController.text
+    });
+    noteController.text = "";
+    EasyLoading.dismiss();
+    isLoadding = false;
+    getAllData();
   }
 
   action(int status, LeaveResponse leave) async {

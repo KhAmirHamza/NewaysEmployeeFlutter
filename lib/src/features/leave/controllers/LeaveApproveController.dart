@@ -20,7 +20,7 @@ class LeaveApproveController extends GetxController {
   getAllData() async {
     EasyLoading.show();
     isLoadding = true;
-    await LeaveAPIServices.getPendingData().then((data) {
+    await LeaveAPIServices.getPendingData(0).then((data) {
       if (data.runtimeType == List<LeaveResponse>) {
         leaves = data;
       }
@@ -41,6 +41,7 @@ class LeaveApproveController extends GetxController {
       "status": status.toString(),
       "note": noteController.text
     });
+    noteController.text = "";
     EasyLoading.dismiss();
     isLoadding = false;
     getAllData();

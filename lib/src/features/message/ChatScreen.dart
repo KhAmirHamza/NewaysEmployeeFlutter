@@ -56,7 +56,6 @@ void setUpPersonToPersonMessagingRealTimeListeners() {
   socket!.on(notifyMessageSendEvent, (data) {
     convsController.onMessageSend(socket!, data);
   });
-
   setUpReactionRealTimeListeners("Single");
 }
 
@@ -73,10 +72,8 @@ void setUpReactionRealTimeListeners(String convsType) {
     convsController.onReactRemoved(socket!, data);
   });
 }
-
 void setUpJoinListener(String currentEmployeeId) {
   //print("Current Employee Id is: ${convsController.currentEmployee!.employeeId!}");
-
   socket!.on("onJoin:$currentEmployeeId", (data) {
    // print('You have Joined now!');
 
@@ -87,7 +84,6 @@ void setUpJoinListener(String currentEmployeeId) {
       onlineEmployees.add(newOnlineEmployee);
     }
   });
-
   socket!.on("notifyJoin", (data) {
     print("notifyJoin Called: ${jsonEncode(data).toString()}");
     var jsonMap = data as Map<String, dynamic>;
@@ -104,28 +100,20 @@ void setUpJoinListener(String currentEmployeeId) {
 
     convsController.conversations.refresh();
   });
-
-
 }
-
 void setUpLeaveListener(Function(OnlineEmployee onlineEmployee) setState) {
   //print("Current Employee Id is: ${convsController.currentEmployee!.employeeId!}");
-
   socket!.on("notifyLeave", (data) {
     print("notifyLeave Called: ${jsonEncode(data).toString()}");
     if(data==null) return;
     var jsonMap = data as Map<String, dynamic>;
     jsonMap['status'] = "0";
     OnlineEmployee newOnlineEmployee = OnlineEmployee.fromJson(jsonMap);
-
     setState(newOnlineEmployee);
   });
 
 }
-
 void setUpGroupMessagingRealTimeListeners(String convsType) {
-
- // print("setUpGroupMessagingRealTimeListeners called");
   String notifyMessageSendEvent = "notifyMessageSend?convsType=$convsType";
   socket!.on(notifyMessageSendEvent, (data) {
     convsController.onMessageSend(socket!, data);
@@ -136,7 +124,6 @@ void setUpGroupMessagingRealTimeListeners(String convsType) {
 class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   int index = 0;
   late FocusNode myFocusNode;
-
   @override
   void initState() {
     super.initState();
@@ -152,7 +139,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
   bool openMessage = false;
-
   refreshMainPage() {
     setState(() {});
   }
@@ -574,19 +560,19 @@ class _ConversationItemWidgetState extends State<ConversationItemWidget> {
                       ],
                     ),
                     Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment:  widget.conversation.type == "Single"?  MainAxisAlignment.spaceBetween : MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Align(
                           alignment: Alignment.topRight,
                           child: Text(
-                            lastMessageTime!,
+                            lastMessageTime!.substring(0, lastMessageTime.indexOf('-',4)),
+                            //lastMessageTime!,
                             style: const TextStyle(fontSize: 12, color: Colors.grey),
                           ),
                         ),
                         Visibility(
-                          visible:
-                          widget.conversation.type == "Group" ? false : true,
+                          visible: widget.conversation.type == "Single" ? true : false,
                           child: Container(
                             alignment: Alignment.bottomRight,
                             margin: const EdgeInsets.only(top: 14),

@@ -24,6 +24,7 @@ class LoginResponseModel {
     required this.phone,
     required this.otp,
     required this.isDepHead,
+    required this.reportingBoss,
   });
 
   String accessToken;
@@ -38,6 +39,7 @@ class LoginResponseModel {
   dynamic phone;
   dynamic otp;
   bool isDepHead;
+  String reportingBoss;
 
   factory LoginResponseModel.fromJson(Map<String, dynamic> json) =>
       LoginResponseModel(
@@ -53,6 +55,7 @@ class LoginResponseModel {
         avater: json["avater"],
         phone: json["phone"],
         otp: json["otp"],
+        reportingBoss: json["reporting_boss"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -68,5 +71,6 @@ class LoginResponseModel {
         "avater": avater,
         "phon": phone,
         "otp": otp,
+        "reporting_boss": reportingBoss,
       };
 }

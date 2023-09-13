@@ -58,7 +58,8 @@ class LinkedDeviceScreen extends StatelessWidget {
                           children: [
                             SvgPicture.asset(
                               "assets/icons/desktop-login.svg",
-                              width: Get.mediaQuery.size.width / 2,
+                             // width: Get.mediaQuery.size.width / 2,
+                              width: 100,
                               fit: BoxFit.cover,
                             ),
                             HeightSpace(height: DPadding.half),
@@ -78,7 +79,8 @@ class LinkedDeviceScreen extends StatelessWidget {
                             ),
                             HeightSpace(height: DPadding.half),
                             SizedBox(
-                              width: Get.mediaQuery.size.width / 2,
+                              //width: Get.mediaQuery.size.width / 2,
+                              width: 121,
                               height: 40,
                               child: TextButton(
                                   onPressed: () => controller.scanQR(),
@@ -158,8 +160,7 @@ class LinkedDeviceScreen extends StatelessWidget {
                                             ),
                                             Text(
                                               "Last login at ${getDateTime(DateTime.parse(data['datetime'].toString()))}",
-                                              style: const TextStyle(
-                                                  color: Colors.grey),
+                                              style: const TextStyle(color: Colors.grey),
                                             )
                                           ],
                                         )

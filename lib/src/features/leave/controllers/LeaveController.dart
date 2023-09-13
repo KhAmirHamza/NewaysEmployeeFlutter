@@ -51,8 +51,10 @@ class LeaveController extends GetxController {
     } else {
       howManyDaysController.text =
           ((endDate.difference(startDate).inHours / 24).round() + 1).toString();
-      print(howManyDaysController.text);
+      print("howManyDaysController.text: ${howManyDaysController.text}");
     }
+
+    //return;
     if (double.parse(howManyDaysController.text) < 0.5) {
       message = "Leave duration not valid!";
       return false;
@@ -61,12 +63,13 @@ class LeaveController extends GetxController {
     isLoadding = true;
     await LeaveAPIServices.submit(
       data: LeaveRequest(
-          startDate: "${startDate.year}-${startDate.month}-${startDate.day}",
-          endDate: "${endDate.year}-${endDate.month}-${endDate.day}",
+          startDate: "${startDate.year}-${startDate.month<10? "0${startDate.month}": startDate.month}-${startDate.day<10? "0${startDate.day}": startDate.day}",
+          endDate: "${endDate.year}-${endDate.month<10? "0${endDate.month}": endDate.month}-${endDate.day<10? "0${endDate.day}": endDate.day}",
           howManyDays: howManyDaysController.text,
           note: leaveReasonController.text,
           isHalfDay: isFullDay ? '0' : '1'),
     ).then((data) async {
+      print("Test Leave Request Response: $data");
       message = data;
       await getAllData();
     });

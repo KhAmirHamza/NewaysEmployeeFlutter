@@ -89,6 +89,8 @@ class LoginController extends GetxController {
         box.write('roleName', value.roleName);
         box.write('isDepHead', value.isDepHead);
         box.write('avater', value.avater);
+        box.write('reportingBoss', value.reportingBoss);
+        print("reportingBoss: ${value.reportingBoss}");
         messaging.subscribeToTopic("Neways3");
         messaging.subscribeToTopic(employeeId.text);
         LoginService.setDiviceInfo(data: {

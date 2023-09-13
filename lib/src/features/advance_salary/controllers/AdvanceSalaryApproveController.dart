@@ -34,6 +34,17 @@ class AdvanceSalaryApproveController extends GetxController {
     update();
   }
 
+  dHeadAndBossApproval({required List<int> ids, required String action}) async {
+    EasyLoading.show();
+    isLoadding = true;
+    await AdvanceSalaryAPIServices.dHeadAndBossApproval(action: action, ids: ids, note: noteController.text);
+    EasyLoading.dismiss();
+    isLoadding = false;
+    noteController.clear();
+    await getAllData();
+    update();
+  }
+
   approve({required id}) async {
     EasyLoading.show();
     isLoadding = true;

@@ -56,9 +56,11 @@ class PurchaseMoneyController extends GetxController {
           (element.dHeadApproval.toString() == '1' &&
               element.status.toString() == '1') ||
           (element.dHeadApproval.toString() != '2' &&
-              element.status.toString() == '1'))) {
-        print(element.status);
-        print(element.dHeadApproval);
+              element.status.toString() == '1') ||
+          element.status=='4' || element.status=='6'
+      )) {
+        //print(element.status);
+        //print(element.dHeadApproval);
         responses.add(element);
       }
     });
@@ -72,10 +74,9 @@ class PurchaseMoneyController extends GetxController {
     isApprove = true;
     responses = [];
     tempResponses.forEach((element) {
-      if ((element.status.toString() == '4' ||
-          element.status.toString() == '2')) {
-        print(element.status);
-        print(element.dHeadApproval);
+      if (element.status.toString() == '2') { //(element.status.toString() == '2' || element.status.toString() == '2'
+        //print(element.status);
+        //print(element.dHeadApproval);
         responses.add(element);
       }
     });
@@ -91,8 +92,8 @@ class PurchaseMoneyController extends GetxController {
     tempResponses.forEach((element) {
       if ((element.status.toString() == '3' ||
           element.dHeadApproval.toString() == '2')) {
-        print(element.status);
-        print(element.dHeadApproval);
+        //print(element.status);
+        //print(element.dHeadApproval);
         responses.add(element);
       }
     });

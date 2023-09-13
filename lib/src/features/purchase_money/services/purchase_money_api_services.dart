@@ -14,7 +14,7 @@ import 'package:neways3/src/utils/httpClient.dart';
 class PurchaseMoneyAPIServices {
   static getAllData() async {
     try {
-      var response = await httpAuthGet(path: '/purchase_money_request');
+      var response = await httpAuthGet(path: '/purchase_money_request/');
       if (response.statusCode == 200) {
         return purchaseMoneyResponseFromJson(response.body);
       }
@@ -119,14 +119,12 @@ class PurchaseMoneyAPIServices {
       }
       print(e.response?.statusCode);
     }
-
     return null;
   }
 
   static moneyReceived({required id}) async {
     try {
-      var response =
-          await httpAuthGet(path: '/purchase_money_request_money_received/$id');
+      var response = await httpAuthGet(path: '/purchase_money_request_money_received/$id');
       print(response.body);
       if (response.statusCode == 200) {
         return jsonDecode(response.body)['message'];
@@ -139,7 +137,6 @@ class PurchaseMoneyAPIServices {
       }
       print(e.response?.statusCode);
     }
-
     return null;
   }
 
@@ -161,13 +158,13 @@ class PurchaseMoneyAPIServices {
     return null;
   }
 
-  static leaveRequestDepHeadUpdate({required data}) async {
+  static purchaseMoneyRequestDepHeadAndBossUpdate({required data}) async {
     try {
       var response = await httpAuthPost(
-          path: '/purchase_money_request_dep_head_update', data: data);
+          path: '/purchase_money_request_dhead_and_boss_update', data: data);
       print(jsonDecode(response.body));
       if (response.statusCode == 200) {
-        Get.snackbar('Error', jsonDecode(response.body)['message'],
+        Get.snackbar('Success', jsonDecode(response.body)['message'],
             snackPosition: SnackPosition.BOTTOM,
             margin: EdgeInsets.all(DPadding.full));
         return true;
@@ -183,7 +180,6 @@ class PurchaseMoneyAPIServices {
       }
       print(e.response?.statusCode);
     }
-
     return null;
   }
 }

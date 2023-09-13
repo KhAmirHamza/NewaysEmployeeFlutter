@@ -76,6 +76,7 @@ dependencies:
   store_redirect: ^2.0.1
   contacts_service: ^0.6.3
   mentionable_text_field: ^0.0.2
+  table_calendar: ^3.0.9
 
 dev_dependencies:
   flutter_launcher_icons: #"^0.10.0"

@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import '../../../utils/appbar.dart';
 import '../controllers/PurchaseMoneyApproveController.dart';
 import '../models/PurchaseMoneyResponse.dart';
@@ -59,7 +60,7 @@ class PurchaseMoneyApproveScreen extends StatelessWidget {
                                   Text(
                                     response.fullName!.toString(),
                                     style: const TextStyle(
-                                        fontSize: 18,
+                                        fontSize: 16,
                                         fontWeight: FontWeight.bold),
                                   ),
                                   HeightSpace(height: DPadding.half),
@@ -72,9 +73,11 @@ class PurchaseMoneyApproveScreen extends StatelessWidget {
                                                 title:
                                                     "Are you sure approve this request?",
                                                 okPress: () async {
-                                                  await controller.action(
-                                                      1, response);
-                                                  Get.back();
+
+                                                  await controller.purchaseMoneyRequestDepHeadAndBossUpdate("Accept", response);
+                                                  if(!context.mounted) return;
+                                                  Navigator.pop(context);
+                                                  //Get.back();
                                                 },
                                                 widget: Container(
                                                   height: 50,
@@ -123,9 +126,10 @@ class PurchaseMoneyApproveScreen extends StatelessWidget {
                                                 title:
                                                     "Are you sure reject this request?",
                                                 okPress: () async {
-                                                  await controller.action(
-                                                      2, response);
-                                                  Get.back();
+                                                  await controller.purchaseMoneyRequestDepHeadAndBossUpdate("Reject", response);
+                                                  if(!context.mounted) return;
+                                                  Navigator.pop(context);
+                                                  //Get.back();
                                                 },
                                                 widget: Container(
                                                   height: 50,

@@ -80,8 +80,9 @@ class AdvanceSalaryApproveScreen extends StatelessWidget {
                                                 title:
                                                     "Are you sure approve this request?",
                                                 okPress: () async {
-                                                  await controller.approve(
-                                                      id: response.id);
+                                                  await controller.dHeadAndBossApproval(ids: [response.id], action: "Accept");
+                                                  // await controller.approve(
+                                                  //     id: response.id);
                                                   Get.back();
                                                 },
                                                 widget: Container(
@@ -127,11 +128,10 @@ class AdvanceSalaryApproveScreen extends StatelessWidget {
                                           label: const Text('Approve')),
                                       TextButton.icon(
                                           onPressed: () => defaultDialog(
-                                                title:
-                                                    "Are you sure reject this request?",
+                                                title: "Are you sure reject this request?",
                                                 okPress: () async {
-                                                  await controller.reject(
-                                                      id: response.id);
+                                                  await controller.dHeadAndBossApproval(ids: [response.id], action: "Reject");
+                                                  //await controller.reject(id: response.id);
                                                   Get.back();
                                                 },
                                                 widget: Container(
