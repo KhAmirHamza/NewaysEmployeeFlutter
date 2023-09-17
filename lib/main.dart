@@ -15,12 +15,15 @@ import 'package:hive_flutter/adapters.dart';
 import 'package:neways3/src/features/main/MainPage.dart';
 import 'package:neways3/src/features/message/ChatScreen.dart';
 import 'package:neways3/src/features/message/controllers/SocketController.dart';
+import 'package:neways3/src/features/employee_location/screens/GeolocatorWidget.dart';
 import 'package:neways3/src/features/splash/SplashScreen.dart';
-import 'package:neways3/src/utils/LocalNotificationService.dart';
+import 'package:neways3/src/features/wifi/pages/WifiScannerPage.dart';
 import 'package:neways3/src/utils/constants.dart';
 import 'package:neways3/src/utils/functions.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:socket_io_client/socket_io_client.dart';
+
+
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationPlugin = FlutterLocalNotificationsPlugin();
 final FirebaseMessaging messaging = FirebaseMessaging.instance;
@@ -209,6 +212,8 @@ class _MyAppState extends State<MyApp> {
     SocketController socketController = SocketController();
     socket = socketController.getInstance();
     getToken();
+
+
   }
 
   @override
@@ -222,6 +227,7 @@ class _MyAppState extends State<MyApp> {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+
     return GetMaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Neways3',
@@ -252,6 +258,7 @@ class _MyAppState extends State<MyApp> {
             case '/chat':
               return MaterialPageRoute(
                 builder: (_) => MainPage( socket!, 0 ),
+               // builder: (_) => const GeolocatorWidget(),
               );
               break;
             // default:
@@ -264,25 +271,19 @@ class _MyAppState extends State<MyApp> {
             //   MentionItem("Khandakar"),
             //   MentionItem("Amir"),
             //   MentionItem("Hamza")])
-
             //PrebookScreen()
-
             // InkWell(
             //   onTap: (){
             //     PhoneContactController().loadContacts("72505", "employee");
             //   },
             //   child: Center(child: Text("test")),
             // )
-
-
   }
 }
 
 /*setUpNotificationClick(FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin){
   const AndroidInitializationSettings initializationSettingsAndroid =
   AndroidInitializationSettings('app_icon');
-
-
   const InitializationSettings initializationSettings = InitializationSettings(
       android: initializationSettingsAndroid);
   // await flutterLocalNotificationsPlugin.initialize(initializationSettings,

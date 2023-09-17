@@ -26,7 +26,6 @@ class WorkplaceService {
       }
       print(e.response?.statusCode);
     }
-
     return null;
   }
 

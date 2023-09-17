@@ -77,6 +77,13 @@ dependencies:
   contacts_service: ^0.6.3
   mentionable_text_field: ^0.0.2
   table_calendar: ^3.0.9
+  location: ^5.0.3
+  geocoding: ^2.1.0
+  network_info_plus: ^4.0.2
+  connectivity_plus: ^4.0.2
+  wifi_scan: ^0.4.0+2
+  app_settings: ^5.0.0
+  wifi_iot: ^0.3.18+1
 
 dev_dependencies:
   flutter_launcher_icons: #"^0.10.0"

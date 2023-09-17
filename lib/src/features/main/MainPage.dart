@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:neways3/src/features/contacts/presentation/ContactScreen.dart';
 import 'package:neways3/src/features/message/ChatScreen.dart';
@@ -15,6 +16,7 @@ import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:socket_io_client/socket_io_client.dart';
 import '../contacts/models/employee_response_model.dart';
 //import '../message/controllers/SocketController.dart';
+import '../employee_location/controller/LocationController.dart';
 import '../message/models/OnlineEmployee.dart';
 import '../profile/models/profile_response_model.dart';
 import '../profile/services/profile_service.dart';
@@ -53,6 +55,7 @@ getEmployeeData(Socket socket, Function(OnlineEmployee newOnlineEmployee) refres
 
 
 class _MainPageState extends State<MainPage> {
+  final LocationController locationController = Get.put(LocationController());
 
   refreshMainPage(OnlineEmployee newOnlineEmployee){
     setState(() {
@@ -109,14 +112,12 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
 
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
 
-    });
 
     final screens = [
-      ChatScreen(widget.socket),
+      ChatScreen(widget.socket, locationController: locationController),
       const ContactScreen(),
-      WorkplaceScreen(),
+      WorkplaceScreen(locationController),
       const NotificationScreen(),
       const ProfileScreen(),
     ];

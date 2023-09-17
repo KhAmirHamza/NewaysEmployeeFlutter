@@ -5,9 +5,11 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_switch/flutter_switch.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:neways3/src/features/contacts/presentation/ContactScreen.dart';
+import 'package:neways3/src/features/employee_location/screens/EmployeeLocationScreen.dart';
 import 'package:neways3/src/features/fired_employee/components/FiredApproveScreen.dart';
 import 'package:neways3/src/features/leave/components/LeaveApproveScreen.dart';
 import 'package:neways3/src/features/leave/components/LeaveScreen.dart';
@@ -21,10 +23,13 @@ import 'package:neways3/src/features/task/components/DHeadTaskApproval.dart';
 import 'package:neways3/src/features/workplace/controller/WorkplaceController.dart';
 import 'package:neways3/src/features/workplace/model/PendingApproval.dart';
 import 'package:neways3/src/utils/constants.dart';
+import 'package:neways3/src/utils/functions.dart';
 
 import '../../advance_salary/components/AdvanceSalaryApproveScreen.dart';
 import '../../advance_salary/components/AdvanceSalaryScreen.dart';
+import '../../employee_location/controller/LocationController.dart';
 import '../../leave/components/LeaveBossApproveScreen.dart';
+import '../../employee_location/MyLocation.dart';
 import '../../requisition/controllers/RequisitionController.dart';
 import '../../resign/components/ResignAppliedScreen.dart';
 import '../../resign/components/ResignApproveScreen.dart';
@@ -34,20 +39,71 @@ import '../../emergency_work/components/EmergencyWorkScreen.dart';
 import '../../emergency_work/components/EmergencyWorkApproveScreen.dart';
 import '../../task/components/TaskScreen.dart';
 
-class WorkplaceScreen extends StatelessWidget {
-  WorkplaceScreen({Key? key}) : super(key: key);
+class WorkplaceScreen extends StatefulWidget {
+  LocationController locationController;
+  WorkplaceScreen( this.locationController, {Key? key}) : super(key: key);
+
+  @override
+  State<WorkplaceScreen> createState() => _WorkplaceScreenState();
+}
+
+class _WorkplaceScreenState extends State<WorkplaceScreen> {
   final scrollController = ScrollController();
+
   final requisitionController = Get.put(RequisitionController());
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+
+  }
 
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
         statusBarColor: DColors.primary,
         statusBarIconBrightness: Brightness.light));
+
+
+    // WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+    //   //determinePosition();
+    //   // MyLocation.getLocationUpdates((Position position){
+    //   //   print('2: ${position.latitude.toString()}, ${position.longitude.toString()}');
+    //   //
+    //   //   // WorkplaceController.updateLocation(position);
+    //   // });
+    //
+    //   // await locationController.checkPermission();
+    //   // //await locationController.getCurrentLocation();
+    //   // //await locationController.getAddressFromLocationData();
+    //   // await locationController.getContinuousLocationCallback((locationData) async {
+    //   //
+    //   //   if(locationController.placeMarks !=null && locationController.placeMarks!.isNotEmpty)
+    //   //     {
+    //   //       Placemark element = locationController.placeMarks![0];
+    //   //
+    //   //       String address = '${element.street!}, ${element.subLocality!}, ${element.locality!}, ${element.country!}';
+    //   //       print(address);
+    //   //
+    //   //       showInSnackBar(context, address);
+    //   //     }
+    //   //
+    //   //     // for (var element in locationController.placeMarks!) {
+    //   //     //
+    //   //     //
+    //   //     //
+    //   //     // }
+    //   //
+    //   // });
+    // });
+
     return SafeArea(
       child: GetBuilder<WorkplaceController>(
           init: WorkplaceController(),
           builder: (controller) {
+
             return Scaffold(
               appBar: AppBar(
                 elevation: 0,
@@ -326,6 +382,16 @@ class WorkplaceScreen extends StatelessWidget {
                                       );
                                     }, title: 'Requisition Approval',
                                   ),
+
+                                  DashboardGrid(
+                                    pendingCount: 0,
+                                    color: Colors.blueAccent,
+                                    icon: Icons.location_on_outlined,
+                                    onPress: () =>
+                                        Get.to(EmployeeLocationScreen(widget.locationController)),
+                                    title: 'Location',
+                                  ),
+
                                   // DashboardGrid(
                                   //   color: Colors.green,
                                   //   icon: Icons.work_off_outlined,

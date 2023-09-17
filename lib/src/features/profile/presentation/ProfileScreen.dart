@@ -14,6 +14,7 @@ import 'package:neways3/src/features/profile/presentation/MyHolidayCalender.dart
 import 'package:neways3/src/features/profile/presentation/MyHolidaysScreen.dart';
 import 'package:neways3/src/features/salary/presentation/SalaryScreen.dart';
 import 'package:neways3/src/features/wallet/presentation/WalletScreen.dart';
+import 'package:neways3/src/features/wifi/controller/MyWifiController.dart';
 import 'package:neways3/src/utils/constants.dart';
 import 'package:neways3/src/utils/size_config.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -30,8 +31,17 @@ import 'package:material_dialogs/material_dialogs.dart';
 import 'package:store_redirect/store_redirect.dart';
 
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+
+  final MyWifiController myWifiController = Get.put(MyWifiController());
+
 
   @override
   Widget build(BuildContext context) {
@@ -180,6 +190,28 @@ class ProfileScreen extends StatelessWidget {
                       child: SingleChildScrollView(
                         child: Column(
                           children: [
+                            HeightSpace(height: DPadding.full),
+                            const Divider(),
+                            Column(children: [
+                              Row(children: [
+                                const Text("Auto Connect "),
+                                Expanded(
+                                  child: Switch(
+                                    // This bool value toggles the switch.
+                                    value: myWifiController.wifiAutoConnect,
+                                    activeColor: Colors.red,
+                                    onChanged: (bool value) {
+                                      setState(() {
+                                        myWifiController.initializeMyWifiController(context);
+                                        myWifiController.wifiAutoConnect = value;
+                                        myWifiController.isWifiConnecting = !value;
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ],),
+                            ],) ,
+
                             HeightSpace(height: DPadding.full),
                             const Divider(),
                             ProfileListTile(

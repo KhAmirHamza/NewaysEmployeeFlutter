@@ -38,7 +38,6 @@ class PurchaseMoneyController extends GetxController {
     });
     EasyLoading.dismiss();
     isLoadding = false;
-
     update();
   }
 

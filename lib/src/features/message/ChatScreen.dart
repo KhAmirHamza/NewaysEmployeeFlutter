@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:neways3/src/features/contacts/controllers/ContactController.dart';
 import 'package:neways3/src/features/contacts/models/employee_response_model.dart';
+import 'package:neways3/src/features/employee_location/controller/LocationController.dart';
 import 'package:neways3/src/features/message/bloc/contact_list_page.dart';
 import 'package:neways3/src/features/message/functions.dart';
 import 'package:neways3/src/features/message/models/OnlineEmployee.dart';
@@ -28,8 +29,9 @@ List<OnlineEmployee> onlineEmployees = <OnlineEmployee>[];
 
 class ChatScreen extends StatefulWidget {
   final Socket socket;
+  LocationController? locationController;
 
-  const ChatScreen(this.socket, {Key? key}) : super(key: key);
+  ChatScreen(this.socket,  {this.locationController, Key? key}) : super(key: key);
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -145,6 +147,14 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+
+      if(widget.locationController!=null){
+        widget.locationController!.setContext(context);
+        await widget.locationController!.enableLocation();
+      }
+
+    });
 
 
     TextEditingController searchContactController = TextEditingController();

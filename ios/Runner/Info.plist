@@ -47,6 +47,15 @@
 	<true/>
 
 	<key>NSContactsUsageDescription</key>
-    <string>Description of why you need the contacts permission.</string>  
+    <string>Description of why you need the contacts permission.</string>
+
+
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <key>NSLocationAlwaysUsageDescription</key>
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+
+
+    <key>UIBackgroundModes</key>
+    <string>location</string>
 </dict>
 </plist>

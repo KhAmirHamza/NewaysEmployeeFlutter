@@ -35,7 +35,7 @@ class FiredApproveScreen extends StatelessWidget {
           init: EmployeeFiredController(),
           builder: ((controller) => controller.isPendingDataEmpty
               ? const Center(
-                  child: Text("Data Not Fount"),
+                  child: Text("Data Not Found"),
                 )
               : ListView.builder(
                   itemCount: controller.responsesPending.length,

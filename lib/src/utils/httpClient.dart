@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 // flutter build apk --split-per-abi
 var baseUrl = '116.68.198.178';
 //var baseUrl = '10.100.93.202';
-var unencodedPath = "neways_employee_mobile_application/v1/api";
+const unencodedPath = "neways_employee_mobile_application/v1/api";
 // var baseUrl = '192.168.0.104';
 // var unencodedPath = "neways/neways_employee/api";
 
@@ -30,9 +30,9 @@ Future<http.Response> httpAuthPost({data, required path}) async {
   return response;
 }
 
-Future<http.Response> httpGet({required path}) async {
+Future<http.Response> httpGet({required path, unEncodedMiddlePath = unencodedPath}) async {
   Map<String, String>? headers = {"accept": "application/json"};
-  var url = Uri.http(baseUrl, '$unencodedPath$path');
+  var url = Uri.http(baseUrl, '$unEncodedMiddlePath$path');
   var response = await http.get(
     url,
     headers: headers,

@@ -1,9 +1,7 @@
-import 'package:elastic_drawer/elastic_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:neways3/src/features/prebook/widgets/PrebookScreen.dart';
 import 'package:neways3/src/utils/constants.dart';
-
 import 'LoginScreen.dart';
 
 class LoginPreviousScreen extends StatefulWidget {
@@ -11,8 +9,6 @@ class LoginPreviousScreen extends StatefulWidget {
 
   @override
   State<LoginPreviousScreen> createState() => _LoginPreviousScreenState();
-
-
 }
 
 class _LoginPreviousScreenState extends State<LoginPreviousScreen> {
@@ -97,7 +93,7 @@ class _MainWidgetState extends State<MainWidget> {
   Widget build(BuildContext context) {
     return Container(
       alignment: Alignment.center,
-      margin: const EdgeInsets.fromLTRB(0,70,0,100),
+      margin: const EdgeInsets.fromLTRB(0,70,0,150),
       child: Column(
         children: [
           Expanded(
@@ -120,7 +116,7 @@ class _MainWidgetState extends State<MainWidget> {
 
                 const HeightSpace(),
                 Container(
-                  margin: EdgeInsets.only(left: 20),
+                  margin: const EdgeInsets.only(left: 20),
                   child: Text(
                     "Welcome to Neways",
                     style: TextStyle(
@@ -131,7 +127,7 @@ class _MainWidgetState extends State<MainWidget> {
                 ),
 
                 Container(
-                  margin: EdgeInsets.only(top: 70),
+                  margin: const EdgeInsets.only(top: 70),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
 
@@ -139,38 +135,40 @@ class _MainWidgetState extends State<MainWidget> {
                     Container(
                       alignment: Alignment.centerLeft,
                       child: Container(
-                        width: 150,
+                        width: 110,
                         decoration:  BoxDecoration(
+                            color: Colors.lightBlueAccent.withOpacity(0.2),
                             shape: BoxShape.rectangle,
                             border: Border.all(width: 1.0, color: DColors.primary),
                             borderRadius: BorderRadius.circular(8)
 
                         ),
-                        padding: EdgeInsets.fromLTRB(0,10,0,10),
+                        padding: const EdgeInsets.fromLTRB(0,10,0,10),
                         child: InkWell(
                           onTap: (){
                             Navigator.push(context,
                                 MaterialPageRoute(builder: (context) => const LoginScreen()));
                           },
-                          child: Text("Login", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, ),textAlign: TextAlign.center,),
+                          child: const Text("Login", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, ),textAlign: TextAlign.center,),
                         ),
                       ),
                     ),
 
                     Container(
-                      width: 150,
+                      width: 170,
                       decoration:  BoxDecoration(
+                          color: Colors.lightBlueAccent.withOpacity(0.2),
                           shape: BoxShape.rectangle,
                           border: Border.all(width: 1.0, color: DColors.primary),
                           borderRadius: BorderRadius.circular(8)
                       ),
-                      padding: EdgeInsets.fromLTRB(0,10,0,10),
+                      padding: const EdgeInsets.fromLTRB(0,10,0,10),
                       child: InkWell(
                         onTap: (){
                           Navigator.push(context,
                               MaterialPageRoute(builder: (context) => const PrebookScreen()));
                         },
-                        child: Text("Registration", style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),textAlign: TextAlign.center,),
+                        child: const Text("Interview Registration", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),textAlign: TextAlign.center,),
                       ),
                     ),
                   ],),
